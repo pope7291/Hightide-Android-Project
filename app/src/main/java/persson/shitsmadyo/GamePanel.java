@@ -800,7 +800,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             }
             canvas.restoreToCount(savedState);
         }
-    }
+    } 
 
     public void drawText(Canvas canvas) {
         Paint paint = new Paint();
