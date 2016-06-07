@@ -66,6 +66,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     MediaPlayer death;
     MediaPlayer clickMP;
     MediaPlayer smackMP;
+    MediaPlayer boatSmackMP;
     MediaPlayer breakMP;
     MediaPlayer pickupMP;
     MediaPlayer music;
@@ -356,9 +357,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             //add boats on timer
             long boatElapsed = (System.nanoTime() - boatStartTime) / 1000000;
             if (boatElapsed > (spawnRate * 10000)) {
-                final int pos = (int) (rand.nextDouble() * (WIDTH - 262));
-                warning.add(new Warning(BitmapFactory.decodeResource(getResources(), R.drawable.warning), pos + 70, 0, 150, 150, (int) player.getTime(), 3));
-                System.out.println("Creating warning");
+          //      final int pos = (int) (rand.nextDouble() * (WIDTH - 262));
+             //   warning.add(new Warning(BitmapFactory.decodeResource(getResources(), R.drawable.warning), pos + 70, 0, 150, 150, (int) player.getTime(), 3));
+              //  System.out.println("Creating warning");
                 boatStartTime = System.nanoTime();
                 //MediaPlayer warningMP = MediaPlayer.create(this.getContext(), R.raw.boatwarning);
                 //final MediaPlayer boatMP = MediaPlayer.create(this.getContext(), R.raw.boatsound);
@@ -368,9 +369,33 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
+                        boolean correct = false;
+                        boolean boatB;
+                        int pos = (int) (rand.nextDouble() * (WIDTH - 210));
+                        Rect puTemp = new Rect(pos, 0, pos + 210, GamePanel.HEIGHT);
+                        while (!correct) {
+                            boatB = true;
+                            for (int i = 0; i < rock.size(); i++) {
+                                if (collisionRock(puTemp, rock.get(i))) {
+                                    boatB = false;
+                                    pos = (int) (rand.nextDouble() * (WIDTH - 210));
+                                    puTemp = new Rect(pos, 0, pos + 210, GamePanel.HEIGHT);
+                                }
+                            }
+                            if (boatB) {
+                                correct = true;
+                            }
+                        }
+                        int boatVar = rand.nextInt(3);
                         System.out.println("Creating boat");
-                        boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boat), pos, -600, 262, 590, (int) player.getTime(), 7));
-                        warning.remove(0);
+                        if(boatVar==0) {
+                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boatarray), pos, -600, 210, 399, (int) player.getTime(), 7));
+                        } else if(boatVar==1) {
+                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boatarraycoke), pos, -600, 210, 399, (int) player.getTime(), 7));
+                        } else if(boatVar==2) {
+                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boatarrayhoes), pos, -600, 210, 399, (int) player.getTime(), 7));
+                        }
+//                        warning.remove(0);
                         boatMP.start();
                     }
                 }, 1500);
@@ -478,9 +503,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             while (j<boat.size()) {
                 boat.get(j).update();
                 if (collision(player, boat.get(j)) && !player.isDead()) {
+                    boatSmackMP = MediaPlayer.create(this.getContext(), R.raw.boatsmack);
                     boat.get(j).getBitmap().recycle();
                     System.out.println(boat.size());
                     boat.remove(j);
+                    boatSmackMP.start();
                     System.out.println("Removed boat");
                     System.out.println(boat.size());
                     death();
