@@ -102,7 +102,8 @@ public class Boat extends GameObject {
     }
     @Override
     public void update(){
-        speed = (GamePanel.MOVESPEED * 4);
+        //TODO ändra tillbaks till *4
+        speed = (GamePanel.MOVESPEED * 1);
         y+=speed;
         animation.update();
         if (y>-(GamePanel.HEIGHT)){
