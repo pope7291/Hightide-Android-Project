@@ -272,6 +272,7 @@ public class Player extends GameObject {
 
         } else if ( powerups.get(0) instanceof Lsd) {
             setLsd(true);
+            puActive = true;
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {

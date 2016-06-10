@@ -103,10 +103,10 @@ public class Boat extends GameObject {
     @Override
     public void update(){
         //TODO ändra tillbaks till *4
-        speed = (GamePanel.MOVESPEED * 1);
+        speed = (GamePanel.MOVESPEED * 4);
         y+=speed;
         animation.update();
-        if (y>-(GamePanel.HEIGHT)){
+        if (y>GamePanel.HEIGHT){
             spritesheet.recycle();
         }
 //        ExecutorService exec = Executors.newFixedThreadPool(1);

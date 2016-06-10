@@ -32,13 +32,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     //private Rect leftBorder = new Rect(0, 0, (int) (WIDTH * scaleFactorX / 3), (int) (HEIGHT * scaleFactorY));
     private ArrayList<GameObject> rock;
     private long rockStartTime;
-    //private ArrayList<GameObject> hunter;
-    //private long hunterStartTime;
-    private ArrayList<GameObject> spear;
     private ArrayList<Boat> boat;
     private ArrayList<Warning> warning;
     private ArrayList<PowerUp> powerup;
+    private ArrayList<Hunter> hunter;
+    private ArrayList<GameObject> spear;
     private long boatStartTime;
+    private long hunterStartTime;
     private Random rand = new Random();
     private int click = 0;
     private long puStartTime;
@@ -70,6 +70,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     MediaPlayer breakMP;
     MediaPlayer pickupMP;
     MediaPlayer music;
+    MediaPlayer lsdMP;
+    //MediaPlayer lsdPUMP;
     Smoke smoke;
 
     public GamePanel(Context context) {
@@ -129,9 +131,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         thread.start();
 
     }
-    public void createSpear(int xb, int yb) {
-        //spear.add(new Spear(BitmapFactory.decodeResource(getResources(), R.drawable.spear), xb+50, yb+100, 10, 75, player.getTime(), 2));
-    }
     public Smoke getSmoke(){
         return smoke;
     }
@@ -145,12 +144,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         boat = new ArrayList<Boat>();
         warning = new ArrayList<Warning>();
         powerup = new ArrayList<PowerUp>();
+        hunter = new ArrayList<Hunter>();
         spear = new ArrayList<GameObject>();
-        //hunter = new ArrayList<GameObject>();
         rockStartTime = System.nanoTime();
         boatStartTime = System.nanoTime();
         puStartTime = System.nanoTime();
-       // hunterStartTime = System.nanoTime();
+        hunterStartTime = System.nanoTime();
 
         powerupImages = new ArrayList<>();
         spawnRate = 0.5;
@@ -401,37 +400,44 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 }, 1500);
                 //warningMP.release();
             }
-//            long hunterElapsed = (System.nanoTime() - hunterStartTime) / 1000000;
-//            if(hunterElapsed > (spawnRate *10000)) {
-//                boolean correct = false;
-//                boolean hunterB;
-//                int pos = (int) (rand.nextDouble() * (WIDTH - 125));
-//                Rect huTemp = new Rect(pos, 0, pos + 125, 125);
-//                while (!correct) {
-//                    hunterB = true;
-//                    for(int i = 0; i < hunter.size(); i++) {
-//                        if (collisionRock(huTemp, rock.get(i))) {
-//                            hunterB = false;
-//                            pos = (int) (rand.nextDouble() * (WIDTH - 125));
-//                            huTemp = new Rect(pos, 0, pos + 125, 125);
-//                        }
-//                    }
-//                    if (hunterB) {
-//                        correct = true;
-//                    }
-//                }
-//                hunter.add(new Hunter(BitmapFactory.decodeResource(getResources(), R.drawable.hunter), pos, -125, 125, 125, (int) player.getTime(), 1));
-//                System.out.println("Creating Hunter");
-//                System.out.println(hunter.size());
-//                hunterStartTime = System.nanoTime();
-//            }
-//            for(int i = 0; i>hunter.size();i++) {
-//                if(hunter.get(i).isSpearThrow()) {
-//                    createSpear(hunter.get(i).getX(), hunter.get(i).getY());
-//                    hunter.get(i).setSpearThrow(false);
-//                }
-//
-//            }
+
+            //add hunters on timer
+            long hunterElapsed = (System.nanoTime() - hunterStartTime) / 1000000;
+            if(hunterElapsed > (spawnRate * 10000)) {
+                boolean correct = false;
+                boolean hunterB;
+                int pos = (int) (rand.nextDouble()*(WIDTH - 125));
+
+                Rect hunterTemp = new Rect(pos, 0, pos+125, 125);
+                while(!correct) {
+                    hunterB=true;
+                    for(int i =0;i<rock.size();i++) {
+                        if(collisionRock(hunterTemp, rock.get(i))) {
+                            hunterB=false;
+                            pos =(int)(rand.nextDouble() * (WIDTH-125));
+                            hunterTemp = new Rect(pos, 0, pos+125, 125);
+                        }
+                    }
+                    if(hunterB) {
+                        correct=true;
+                    }
+                }
+                hunter.add(new Hunter(BitmapFactory.decodeResource(getResources(), R.drawable.hunter), pos, -300, 125, 125, 1));
+                hunterStartTime=System.nanoTime();
+                //ljudgrejer för hunter
+
+            }
+
+            for(Hunter h:hunter) {
+                if(h.getY()>HEIGHT*2) {
+                    h.getBitmap().recycle();
+                    hunter.remove(h);
+                }
+                if (h.createSpear()) {
+                    spear.add(new SpearDown(BitmapFactory.decodeResource(getResources(), R.drawable.spear), h.getX(), h.getY(), 15, 120, 1));
+                }
+            }
+
             //add powerups on timer
             long puElapsed = (System.nanoTime() - puStartTime) / 1000000;
             if (puElapsed > (spawnRate * 15000)) {
@@ -516,8 +522,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 }
                 j++;
             }
+            for(int i = 0; i<hunter.size();i++) {
+                hunter.get(i).update();
+            }
             for (int i = 0; i < warning.size(); i++) {
                 warning.get(i).update();
+            }
+            for(int i = 0;i<spear.size();i++) {
+                spear.get(i).update();
             }
             for (int i = 0; i < powerup.size(); i++) {
                 powerup.get(i).update();
@@ -680,9 +692,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             }, 8000);
         } else if (pu instanceof  Lsd) {
             music.pause();
+        //    lsdPUMP = MediaPlayer.create(this.getContext(), R.raw.lsdpickup);
+            lsdMP = MediaPlayer.create(this.getContext(), R.raw.lsd);
+          //  lsdPUMP.start();
+            lsdMP.start();
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    lsdMP.stop();
+                 //   lsdPUMP.stop();
                     music.start();
                     //vodkaMP.reset();
                     //vodkaPUMP.reset();
@@ -713,6 +731,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             vodkaPUMP.stop();
             weedMP.stop();
             weedPUMP.stop();
+            lsdMP.stop();
+          //  lsdPUMP.stop();
             music.stop();
             death.start();
             player.setSpritesheet(BitmapFactory.decodeResource(getResources(), R.drawable.crocdead));
@@ -731,6 +751,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         vodkaPUMP = MediaPlayer.create(this.getContext(), R.raw.vodkapickup);
         weedMP = MediaPlayer.create(this.getContext(), R.raw.weed);
         vodkaMP = MediaPlayer.create(this.getContext(), R.raw.vodka);
+        lsdMP = MediaPlayer.create(this.getContext(), R.raw.lsd);
+        boatSmackMP = MediaPlayer.create(this.getContext(), R.raw.boatsmack);
+        //TODO lsdPUMP när vi har ljudfil
+       // lsdPUMP = MediaPlayer.create(this.getContext(), R.raw.lsdpickup);
     }
 
     public boolean collisionRock(Rect r, GameObject object) {
@@ -807,12 +831,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             for (PowerUp p : powerup) {
                 p.draw(canvas);
             }
+            for(Hunter h:hunter){
+                h.draw(canvas);
+            }
             for (PUCircle pu : powerupImages) {
                 pu.draw(canvas);
             }
-//            for (GameObject h: hunter) {
-//                h.draw(canvas);
-//            }
+            for(GameObject s: spear) {
+                s.draw(canvas);
+            }
             drawText(canvas);
             if (player.getLifes() == 0) {
                 Paint paint = new Paint();

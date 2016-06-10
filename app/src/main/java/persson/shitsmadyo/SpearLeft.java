@@ -1,37 +1,35 @@
 package persson.shitsmadyo;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 
 import java.util.ArrayList;
 
 /**
- * Created by Pontus on 2016-06-09.
+ * Created by Pontus on 2016-06-10.
  */
-public class Hunter extends GameObject{
+public class SpearLeft extends GameObject {
     private int speed;
     private Animation animation = new Animation();
     private Bitmap spritesheet;
     private ArrayList<Point> points;
-    private long spearStartTime;
 
-    public Hunter(Bitmap res, int x, int y, int w, int h, int numFrames) {
+    public SpearLeft(Bitmap res, int x, int y, int w, int h, int numFrames) {
         super.x=x;
         super.y=y;
         width=w;
         height=h;
-        spearStartTime = System.nanoTime();
 
-        speed = GamePanel.MOVESPEED;
+        speed=GamePanel.MOVESPEED;
 
-        Bitmap[] image=new Bitmap[numFrames];
+        Bitmap[] image = new Bitmap[numFrames];
 
         spritesheet=res;
 
-        for(int i=0; i<image.length;i++) {
+        for(int i =0;i<image.length;i++) {
             image[i] = Bitmap.createBitmap(spritesheet, i*width, 0, width, height);
         }
         animation.setFrames(image);
@@ -41,10 +39,10 @@ public class Hunter extends GameObject{
     }
     @Override
     public void update(){
-        speed=GamePanel.MOVESPEED;
-        y+=speed;
+        speed=GamePanel.MOVESPEED*3;
+        x-=speed;
         animation.update();
-        if(y>GamePanel.HEIGHT){
+        if(x<0){
             spritesheet.recycle();
         }
     }
@@ -77,15 +75,4 @@ public class Hunter extends GameObject{
     public ArrayList<Point> getPoints(){
         return this.points;
     }
-    public boolean createSpear(){
-        long spearElapsed = (System.nanoTime() - spearStartTime) / 1000000;
-        if(spearElapsed>(GamePanel.spawnRate*2000)){
-            spearStartTime=System.nanoTime();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
 }
