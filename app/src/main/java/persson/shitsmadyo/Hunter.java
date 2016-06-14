@@ -48,13 +48,9 @@ public class Hunter extends GameObject{
             spritesheet.recycle();
         }
     }
-    @Override
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, Paint paint) {
         try{
-            Paint pm = new Paint();
-            pm.setAntiAlias(true);
-            pm.setFilterBitmap(true);
-            canvas.drawBitmap(animation.getImage(), x, y, pm);
+            canvas.drawBitmap(animation.getImage(), x, y, paint);
         }catch(Exception E){}
     }
     @Override

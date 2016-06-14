@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -388,11 +389,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                         }
                         int boatVar = rand.nextInt(3);
                         if(boatVar==0) {
-                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boatarray), pos, -600, 210, 399, (int) player.getTime(), 7));
+                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boatnatural), pos, -600, 168, 410, (int) player.getTime(), 3));
                         } else if(boatVar==1) {
-                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boatarraycoke), pos, -600, 210, 399, (int) player.getTime(), 7));
+                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boatcoke), pos, -600, 168, 410, (int) player.getTime(), 3));
                         } else if(boatVar==2) {
-                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boatarrayhoes), pos, -600, 210, 399, (int) player.getTime(), 7));
+                            boat.add(new Boat(BitmapFactory.decodeResource(getResources(), R.drawable.boathoe), pos, -600, 168, 410, (int) player.getTime(), 3));
                         }
 //                        warning.remove(0);
                         boatMP.start();
@@ -444,7 +445,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 boolean correct = false;
                 boolean rockB;
                 int pos = (int) (rand.nextDouble() * (WIDTH - 100));
-                //powerup.add(new Weed(BitmapFactory.decodeResource(getResources(), R.drawable.weed), pos, -200, 75, 75, (int) player.getTime(), 3));
                 //check to make sure that the powerup doesn't spawn inside or just right next to a rock.
                 Rect puTemp = new Rect(pos, 0, pos + 100, 100);
                 while (!correct) {
@@ -461,7 +461,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     }
                 }
                 int powerVar = rand.nextInt(4);
-                //boolean powerVar = rand.nextBoolean();
                 if (powerVar==1) {
                     powerup.add(new Weed(BitmapFactory.decodeResource(getResources(), R.drawable.weed), pos, 0, 100, 100, (int) player.getTime(), 8));
                 } else if (powerVar==2) {
@@ -469,7 +468,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 } else if (powerVar==3) {
                     powerup.add(new Lsd(BitmapFactory.decodeResource(getResources(), R.drawable.lsd), pos, 0, 75, 75, (int) player.getTime(), 1));
                 }
-                //powerup.add(new Weed(BitmapFactory.decodeResource(getResources(), R.drawable.weed), pos, 0, 75, 75, (int) player.getTime(), 3));
                 //reset timer
                 puStartTime = System.nanoTime();
             }
@@ -615,32 +613,29 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 b.getPoints().set(17, new Point((b.getX() + 35), (b.getY() + 111)));
                 b.getPoints().set(18, new Point((b.getX() + 22), (b.getY() + 82)));
             } if (b instanceof Boat) {
-                b.getPoints().set(0, new Point((b.getX() + 128), (b.getY() + 553)));
-                b.getPoints().set(1, new Point((b.getX() + 80), (b.getY() + 539)));
-                b.getPoints().set(2, new Point((b.getX() + 52), (b.getY() + 514)));
-                b.getPoints().set(3, new Point((b.getX() + 37), (b.getY() + 475)));
-                b.getPoints().set(4, new Point((b.getX() + 31), (b.getY() + 435)));
-                b.getPoints().set(5, new Point((b.getX() + 31), (b.getY() + 377)));
-                b.getPoints().set(6, new Point((b.getX() + 31), (b.getY() + 319)));
-                b.getPoints().set(7, new Point((b.getX() + 31), (b.getY() + 216)));
-                b.getPoints().set(8, new Point((b.getX() + 31), (b.getY() + 203)));
-                b.getPoints().set(9, new Point((b.getX() + 31), (b.getY() + 145)));
-                b.getPoints().set(10, new Point((b.getX() + 31), (b.getY() + 87)));
-                b.getPoints().set(11, new Point((b.getX() + 51), (b.getY() + 66)));
-                b.getPoints().set(12, new Point((b.getX() + 90), (b.getY() + 46)));
-                b.getPoints().set(13, new Point((b.getX() + 125), (b.getY() + 40)));
-                b.getPoints().set(14, new Point((b.getX() + 158), (b.getY() + 42)));
-                b.getPoints().set(15, new Point((b.getX() + 201), (b.getY() + 57)));
-                b.getPoints().set(16, new Point((b.getX() + 230), (b.getY() + 88)));
-                b.getPoints().set(17, new Point((b.getX() + 230), (b.getY() + 146)));
-                b.getPoints().set(18, new Point((b.getX() + 230), (b.getY() + 204)));
-                b.getPoints().set(19, new Point((b.getX() + 230), (b.getY() + 262)));
-                b.getPoints().set(20, new Point((b.getX() + 230), (b.getY() + 320)));
-                b.getPoints().set(21, new Point((b.getX() + 230), (b.getY() + 378)));
-                b.getPoints().set(22, new Point((b.getX() + 230), (b.getY() + 436)));
-                b.getPoints().set(23, new Point((b.getX() + 229), (b.getY() + 466)));
-                b.getPoints().set(24, new Point((b.getX() + 215), (b.getY() + 502)));
-                b.getPoints().set(25, new Point((b.getX() + 184), (b.getY() + 538)));
+                b.getPoints().set(0, new Point((b.getX() + 88), (b.getY() + 407)));
+                b.getPoints().set(1, new Point((b.getX() + 72), (b.getY() + 399)));
+                b.getPoints().set(2, new Point((b.getX() + 55), (b.getY() + 389)));
+                b.getPoints().set(3, new Point((b.getX() + 38), (b.getY() + 370)));
+                b.getPoints().set(4, new Point((b.getX() + 27), (b.getY() + 348)));
+                b.getPoints().set(5, new Point((b.getX() + 20), (b.getY() + 326)));
+                b.getPoints().set(6, new Point((b.getX() + 18), (b.getY() + 275)));
+                b.getPoints().set(7, new Point((b.getX() + 17), (b.getY() + 202)));
+                b.getPoints().set(8, new Point((b.getX() + 17), (b.getY() + 237)));
+                b.getPoints().set(9, new Point((b.getX() + 16), (b.getY() + 128)));
+                b.getPoints().set(10, new Point((b.getX() + 16), (b.getY() + 161)));
+                b.getPoints().set(11, new Point((b.getX() + 105), (b.getY() + 398)));
+                b.getPoints().set(12, new Point((b.getX() + 116), (b.getY() + 388)));
+                b.getPoints().set(13, new Point((b.getX() + 130), (b.getY() + 370)));
+                b.getPoints().set(14, new Point((b.getX() + 138), (b.getY() + 349)));
+                b.getPoints().set(15, new Point((b.getX() + 145), (b.getY() + 326)));
+                b.getPoints().set(16, new Point((b.getX() + 146), (b.getY() + 276)));
+                b.getPoints().set(17, new Point((b.getX() + 147), (b.getY() + 241)));
+                b.getPoints().set(18, new Point((b.getX() + 147), (b.getY() + 204)));
+                b.getPoints().set(19, new Point((b.getX() + 148), (b.getY() + 166)));
+                b.getPoints().set(20, new Point((b.getX() + 148), (b.getY() + 128)));
+                b.getPoints().set(21, new Point((b.getX() + 84), (b.getY() + 122)));
+
             }
             if (collisionTest(a, b)) {
                 return true;
@@ -811,6 +806,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (canvas != null) {
             final int savedState = canvas.save();
             canvas.scale(scaleFactorX, scaleFactorY);
+            Paint paintOriginal = new Paint();
+            paintOriginal.setAntiAlias(true);
+            paintOriginal.setFilterBitmap(true);
+            LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x000000FF);
+            if(player.isLsd()){
+                paintOriginal.setColorFilter(test);
+            }
             if (menuBg != null) {
                 menuBg.draw(canvas);
             }
@@ -823,7 +825,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 r.draw(canvas);
             }
             for (Boat b : boat) {
-                b.draw(canvas);
+                b.draw(canvas, paintOriginal);
             }
             for (Warning w : warning) {
                 w.draw(canvas);
@@ -832,7 +834,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 p.draw(canvas);
             }
             for(Hunter h:hunter){
-                h.draw(canvas);
+                h.draw(canvas, paintOriginal);
             }
             for (PUCircle pu : powerupImages) {
                 pu.draw(canvas);

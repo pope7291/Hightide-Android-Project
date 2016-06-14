@@ -1,10 +1,17 @@
 package persson.shitsmadyo;
 
 import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Shader;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -42,68 +49,38 @@ public class Boat extends GameObject {
             image[i] = Bitmap.createBitmap(spritesheet, i*width, 0, width, height);
         }
         animation.setFrames(image);
-        animation.setDelay(150);
+        animation.setDelay(200);
 
         //collision points
         points = new ArrayList<>();
-//        Point p1 = new Point(x+56,y+25);
-//        Point p2 = new Point(x+106,y+16);
-//        Point p3 = new Point(x+140,y+24);
-//        Point p4 = new Point(x+160,y+52);
-//        Point p5 = new Point(x+159,y+83);
-//        Point p6 = new Point(x+158,y+126);
-//        Point p7 = new Point(x+173,y+160);
-//        Point p8 = new Point(x+181,y+195);
-//        Point p9 = new Point(x+176,y+235);
-//        Point p10 = new Point(x+155,y+263);
-//        Point p11 = new Point(x+119,y+266);
-//        Point p12 = new Point(x+82,y+253);
-//        Point p13 = new Point(x+41,y+259);
-//        Point p14 = new Point(x+16,y+226);
-//        Point p15 = new Point(x+13,y+185);
-//        Point p16 = new Point(x+18,y+148);
-//        Point p17 = new Point(x+14,y+111);
-//        Point p18 = new Point(x+19,y+74);
-//        Point p19 = new Point(x+32,y+52);
-//        Point p20 = new Point(x+74,y+16);
 
+        points.add(new Point(x+88,y+407));
+        points.add(new Point(x+72,y+399));
+        points.add(new Point(x+55,y+389));
+        points.add(new Point(x+38,y+370));
+        points.add(new Point(x+27,y+348));
+        points.add(new Point(x+20,y+326));
+        points.add(new Point(x+18,y+275));
+        points.add(new Point(x+17,y+202));
+        points.add(new Point(x+17,y+237));
+        points.add(new Point(x+16,y+128));
+        points.add(new Point(x+16,y+161));
 
-
-
-        points.add(new Point(x+128,y+553));
-        points.add(new Point(x+80,y+539));
-        points.add(new Point(x+52,y+514));
-        points.add(new Point(x+37,y+475));
-        points.add(new Point(x+31,y+435));
-        points.add(new Point(x+31,y+377));
-        points.add(new Point(x+31,y+319));
-        points.add(new Point(x+31,y+216));
-        points.add(new Point(x+31,y+203));
-        points.add(new Point(x+31,y+145));
-        points.add(new Point(x+31,y+87));
-        points.add(new Point(x+51,y+66));
-        points.add(new Point(x+90,y+46));
-        points.add(new Point(x+125,y+40));
-        points.add(new Point(x+158,y+42));
-        points.add(new Point(x+201,y+57));
-        points.add(new Point(x+230,y+88));
-        points.add(new Point(x+230,y+146));
-        points.add(new Point(x+230,y+204));
-        points.add(new Point(x+230,y+262));
-        points.add(new Point(x+230,y+320));
-        points.add(new Point(x+230,y+378));
-        points.add(new Point(x+230,y+436));
-        points.add(new Point(x+229,y+466));
-        points.add(new Point(x+215,y+502));
-        points.add(new Point(x+184,y+538));
-
-
-
+        points.add(new Point(x+105,y+398));
+        points.add(new Point(x+116,y+388));
+        points.add(new Point(x+130,y+370));
+        points.add(new Point(x+138,y+349));
+        points.add(new Point(x+145,y+326));
+        points.add(new Point(x+146,y+276));
+        points.add(new Point(x+147,y+241));
+        points.add(new Point(x+147,y+204));
+        points.add(new Point(x+148,y+166));
+        points.add(new Point(x+148,y+128));
+        points.add(new Point(x+84,y+122));
     }
     @Override
     public void update(){
-        //TODO ändra tillbaks till *4
-        speed = (GamePanel.MOVESPEED * 4);
+        speed = (GamePanel.MOVESPEED * 3);
         y+=speed;
         animation.update();
         if (y>GamePanel.HEIGHT){
@@ -172,12 +149,20 @@ public class Boat extends GameObject {
 //        setCurrentThread((Thread.currentThread()));
 //
 //    }
-    @Override
-    public void draw(Canvas canvas){
+    public void draw(Canvas canvas, Paint pm){
         try{
-            Paint pm = new Paint();
-            pm.setAntiAlias(true);
-            pm.setFilterBitmap(true);
+            //Paint pm = new Paint();
+            //pm.setAntiAlias(true);
+            //pm.setFilterBitmap(true);
+            //LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x000000FF);
+            //ColorMatrix color = new ColorMatrix();
+            //color.setSaturation(0.2f);
+          //  pm.setColorFilter(new ColorMatrixColorFilter(color));
+           // BlurMaskFilter b = new BlurMaskFilter(5, BlurMaskFilter.Blur.NORMAL);
+           // pm.setMaskFilter(b);
+           // pm.setShadowLayer(20, 10, 5, Color.BLACK);
+            //Shader shader = new LinearGradient(x, y, x+168, y+410, Color.RED, Color.GREEN, Shader.TileMode.MIRROR);
+           // pm.setShader(shader);
             canvas.drawBitmap(animation.getImage(), x, y, pm);
         }catch(Exception E){}
     }

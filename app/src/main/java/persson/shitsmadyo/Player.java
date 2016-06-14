@@ -2,6 +2,9 @@ package persson.shitsmadyo;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
@@ -143,6 +146,10 @@ public class Player extends GameObject {
         Paint pm = new Paint();
         pm.setAntiAlias(true);
         pm.setFilterBitmap(true);
+//        LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x000000FF);
+//        ColorMatrix color = new ColorMatrix();
+//        color.setSaturation(1.5f);
+//        pm.setColorFilter(new ColorMatrixColorFilter(color));
         if(isDead) {
             canvas.drawBitmap(animationDead.getImage(), x, y, pm);
         } else {

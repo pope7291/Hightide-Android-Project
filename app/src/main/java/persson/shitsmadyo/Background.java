@@ -2,6 +2,11 @@ package persson.shitsmadyo;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Shader;
 
 /**
  * Created by Pontus on 2015-05-04.
@@ -23,14 +28,25 @@ public class Background {
             y=0;
         }
     }
+    public int getY(){
+        return y;
+    }
 
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(image, x, y, null);
+        Paint pm = new Paint();
+        pm.setAntiAlias(true);
+        pm.setFilterBitmap(true);
+        LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x000000FF);
+      //  pm.setColorFilter(test);
+        Shader shader = new LinearGradient(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT, Color.RED, Color.GREEN, Shader.TileMode.MIRROR);
+      // pm.setShader(shader);
+        canvas.drawBitmap(image, x, y, pm);
         if(y>0) {
-            canvas.drawBitmap(image, x, y - GamePanel.HEIGHT, null);
-            //System.out.println("NU");
+            canvas.drawBitmap(image, x, y - GamePanel.HEIGHT, pm);
         }
-        //System.out.println(y);
+    }
+    public Bitmap getBitmap(){
+        return image;
     }
 
 }
