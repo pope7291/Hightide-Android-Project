@@ -79,6 +79,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap pusmalllsd;
     private Bitmap mBitmap;
     private Spawner spawner;
+    private int rockVariation;
+    private int hunterVariation;
+    private int powerUpVariation;
+    private int boatVariation;
     private boolean updateOne = false;
     private boolean updateTwo = false;
     private ArrayList<PUCircle> powerupImages;
@@ -192,6 +196,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         boatStartTime = System.nanoTime();
         puStartTime = System.nanoTime();
         hunterStartTime = System.nanoTime();
+        rockVariation = 9 + (int)(Math.random() * ((11-9)+1));
+        hunterVariation = 7 + (int)(Math.random() * ((13-7)+1));
+        powerUpVariation = 6 + (int)(Math.random() * ((14-6)+1));
+        boatVariation =   8 + (int)(Math.random() * ((12-8)+1));
 
         powerupImages = new ArrayList<>();
         spawnRate = 0.5;
@@ -405,21 +413,25 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             //menuBg.update();
             //add rocks on timer
             long rockElapsed = (System.nanoTime() - rockStartTime) / 1000000;
-            if (rockElapsed > (spawnRate * 7000)) {
+            if (rockElapsed > spawnRate * 7000) {
                 spawner.spawnRock();
+                rockVariation = 9 + (int)(Math.random() * ((11-9)+1));
                 rockStartTime = System.nanoTime();
             }
             //add boats on timer
             long boatElapsed = (System.nanoTime() - boatStartTime) / 1000000;
-            if (boatElapsed > (spawnRate * 10000)) {
+            if (boatElapsed > spawnRate * 10000) {
                 spawner.spawnBoat();
+                boatVariation =   8 + (int)(Math.random() * ((12-8)+1));
+                // boatMP.start();
                 boatStartTime = System.nanoTime();
             }
 
             //add hunters on timer
             long hunterElapsed = (System.nanoTime() - hunterStartTime) / 1000000;
-            if (hunterElapsed > (spawnRate * 10000)) {
+            if (hunterElapsed > spawnRate * 10000) {
                 spawner.spawnHunter();
+                hunterVariation = 7 + (int)(Math.random() * ((13-7)+1));
                 hunterStartTime = System.nanoTime();
                 //ljudgrejer för hunter
             }
@@ -483,7 +495,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     break;
                 }
                 if (boat.get(j).getY() > HEIGHT * 2) {
-                    boatMP.stop();
+                   // boatMP.stop();
                     boat.get(j).getBitmap().recycle();
                     boat.remove(j);
                     break;

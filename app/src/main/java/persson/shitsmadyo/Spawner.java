@@ -21,36 +21,36 @@ public class Spawner {
     }
 
     public void spawnRock() {
+        System.out.println("spawning rock");
         ArrayList<GameObject> rock = gamePanel.getRockList();
         boolean rockVar = rand.nextBoolean();
         int pos;
         if (rockVar) {
-            pos=collisionSpawn(194, 286);
+            pos=collisionSpawn(194, 286, "Rock");
             rock.add(new Rock(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rock), pos, -250, 194, 286, (int) gamePanel.getPlayer().getTime(), 7));
         } else {
-            pos=collisionSpawn(289, 139);
-            rock.add(new RockOne(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rockone), pos, -250, 289, 139, (int) gamePanel.getPlayer().getTime(), 7));
+            System.out.println("LMAO LOLLL");
+            pos=collisionSpawn(259, 360, "Rock");
+            rock.add(new RockOne(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rockonearraynew), pos, -250, 259, 360, (int) gamePanel.getPlayer().getTime(), 3));
         }
         //reset timer
         // gamePanel.setRock(rock);
     }
 
     public void spawnBoat(){
+        System.out.println("Spawning boat");
         //      final int pos = (int) (rand.nextDouble() * (WIDTH - 262));
         //   warning.add(new Warning(BitmapFactory.decodeResource(getResources(), R.drawable.warning), pos + 70, 0, 150, 150, (int) player.getTime(), 3));
         //  System.out.println("Creating warning");
         //MediaPlayer warningMP = MediaPlayer.create(this.getContext(), R.raw.boatwarning);
         //final MediaPlayer boatMP = MediaPlayer.create(this.getContext(), R.raw.boatsound);
-        MediaPlayer warningMP = gamePanel.getWarningMP();
-        MediaPlayer boatMP = gamePanel.getBoatMP();
-        warningMP = MediaPlayer.create(gamePanel.getContext(), R.raw.boatwarning);
+        MediaPlayer warningMP = MediaPlayer.create(gamePanel.getContext(), R.raw.boatwarning);
         warningMP.start();
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                MediaPlayer boatMP = MediaPlayer.create(gamePanel.getContext(), R.raw.boatsound);
                 ArrayList<Boat> boat = gamePanel.getBoat();
-                int pos = collisionSpawn(168, 410);
+                int pos = collisionSpawn(168, gamePanel.HEIGHT, "Boat");
                 int boatVar = rand.nextInt(3);
                 if (boatVar == 0) {
                     boat.add(new Boat(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.boatnatural), pos, -600, 168, 410, (int) gamePanel.getPlayer().getTime(), 3));
@@ -60,21 +60,23 @@ public class Spawner {
                     boat.add(new Boat(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.boathoe), pos, -600, 168, 410, (int) gamePanel.getPlayer().getTime(), 3));
                 }
                 //warning.remove(0);
-                boatMP.start();
+                //boatMP.start();
             }
         }, 1500);
         //warningMP.release();
     }
 
     public void spawnHunter(){
+        System.out.println("spawning hunter");
         ArrayList<Hunter> hunter = gamePanel.getHunter();
-        int pos = collisionSpawn(125, 125);
+        int pos = collisionSpawn(125, 125, "Hunter");
         hunter.add(new Hunter(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.hunter), pos, -300, 125, 125, 1));
     }
 
     public void spawnPowerUp(){
+        System.out.println("spawning pu");
         ArrayList<PowerUp> powerup = gamePanel.getPowerup();
-        int pos = collisionSpawn(75, 75);
+        int pos = collisionSpawn(75, 75, "Powerup");
         int powerVar = rand.nextInt(4);
         if (powerVar == 1) {
             powerup.add(new Weed(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.weed), pos, 0, 100, 100, (int) gamePanel.getPlayer().getTime(), 8));
@@ -85,15 +87,23 @@ public class Spawner {
         }
     }
 
-    public int collisionSpawn(int width, int height){
+    public int collisionSpawn(int width, int height, String type){
         boolean correct = false;
         boolean collision;
 
-        ArrayList<GameObject> objects = new ArrayList<GameObject>();
-        objects.addAll(gamePanel.getRockList());
-        objects.addAll(gamePanel.getHunter());
-        objects.addAll(gamePanel.getBoat());
-     //   objects.addAll(gamePanel.getPowerup());
+        ArrayList<Object> objects = new ArrayList<Object>();
+        if(type!="Rock") {
+            objects.addAll(gamePanel.getRockList());
+        }
+        if(type!="Hunter") {
+            objects.addAll(gamePanel.getHunter());
+        }
+        if(type!="Boat") {
+            objects.addAll(gamePanel.getBoat());
+        }
+        if(type!="Powerup") {
+            objects.addAll(gamePanel.getPowerup());
+        }
 
 
         int pos = (int) (rand.nextDouble() * (gamePanel.WIDTH - width));
@@ -102,10 +112,21 @@ public class Spawner {
         while(!correct) {
             collision = true;
             for(int i = 0; i<objects.size(); i++) {
-                if(collision(rectTemp, objects.get(i))) {
-                    collision=false;
-                    pos = (int)(rand.nextDouble() * (gamePanel.WIDTH - width));
-                    rectTemp = new Rect(pos, 0, pos+width, height);
+                System.out.println("Kollar object...");
+                if(objects.get(i) instanceof GameObject) {
+                    if (collision(rectTemp, (GameObject)objects.get(i))) {
+                        System.out.println("Kollision!lel");
+                        collision = false;
+                        pos = (int) (rand.nextDouble() * (gamePanel.WIDTH - width));
+                        rectTemp = new Rect(pos, 0, pos + width, height);
+                    }
+                } else if(objects.get(i) instanceof PowerUp) {
+                    if (collisionPU(rectTemp, (PowerUp)objects.get(i))) {
+                        System.out.println("Kollision!lel");
+                        collision = false;
+                        pos = (int) (rand.nextDouble() * (gamePanel.WIDTH - width));
+                        rectTemp = new Rect(pos, 0, pos + width, height);
+                    }
                 }
             }
             if(collision) {
@@ -117,6 +138,13 @@ public class Spawner {
 
     public boolean collision(Rect r, GameObject object) {
         if (Rect.intersects(r, object.getRectangle())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean collisionPU(Rect r, PowerUp object) {
+        if(Rect.intersects(r, object.getRectangle())) {
             return true;
         }
         return false;
