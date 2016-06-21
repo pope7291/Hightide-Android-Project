@@ -25,6 +25,31 @@ public class Player extends GameObject {
     private boolean playing;
     private Animation animation = new Animation();
     private Animation animationDead = new Animation();
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getScoreStartTime() {
+        return scoreStartTime;
+    }
+
+    public void setScoreStartTime(long scoreStartTime) {
+        this.scoreStartTime = scoreStartTime;
+    }
+
+    public long getAbsStartTime() {
+        return absStartTime;
+    }
+
+    public void setAbsStartTime(long absStartTime) {
+        this.absStartTime = absStartTime;
+    }
+
     private long startTime;
     private int movement;
     private boolean tooFarLeft;
@@ -71,7 +96,7 @@ public class Player extends GameObject {
         startTime = System.nanoTime();
         powerups = new ArrayList<>();
         lifes = 3;
-        setAbstinens(50);
+        abstinens = 99;
        // powerupImages.add(new PUCircle(GamePanel.getPuempty()));
 
     }
@@ -105,7 +130,7 @@ public class Player extends GameObject {
         }
         long absElapsed = (System.nanoTime()-absStartTime)/1000000;
         if(absElapsed>750 && !isPuActive()) {
-            if(abstinens!=0) {
+            if(abstinens>0) {
                 abstinens--;
             }
             absStartTime = System.nanoTime();
@@ -146,10 +171,20 @@ public class Player extends GameObject {
         Paint pm = new Paint();
         pm.setAntiAlias(true);
         pm.setFilterBitmap(true);
-//        LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x000000FF);
-//        ColorMatrix color = new ColorMatrix();
-//        color.setSaturation(1.5f);
-//        pm.setColorFilter(new ColorMatrixColorFilter(color));
+        ColorMatrix color = new ColorMatrix();
+        if(abstinens<21) {
+            color.setSaturation(0.25f);
+        } else if(abstinens<41) {
+            color.setSaturation(0.5f);
+        } else if(abstinens<61) {
+            color.setSaturation(0.75f);
+        } else if(abstinens<81) {
+            color.setSaturation(1.0f);
+        } else if(abstinens<=100) {
+            color.setSaturation(1.5f);
+        }
+
+        pm.setColorFilter(new ColorMatrixColorFilter(color));
         if(isDead) {
             canvas.drawBitmap(animationDead.getImage(), x, y, pm);
         } else {
@@ -238,6 +273,12 @@ public class Player extends GameObject {
         //spawn of rocks, boats and PUs must be adjusted to accomodate for the decreased speed, else the screen will be spammed with objects because they spawn at the same rate as usual but don't move as fast,
         //meaning they clunk up
         System.out.println("Activating" + powerups.size() + "" + powerups);
+        //TODO Switch case
+        if(abstinens<=80) {
+            abstinens += 20;
+        } else {
+            abstinens=100;
+        }
         if (powerups.get(0) instanceof Weed){
             final int movespeed = GamePanel.MOVESPEED;
             final double spawnrate = GamePanel.spawnRate;

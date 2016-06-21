@@ -27,6 +27,7 @@ public class Rock extends GameObject {
     private Rect[] rectangles;
     private ArrayList<Point> points;
     private Thread thread;
+    private boolean destroyed = false;
 
     public Rock(Bitmap res, int x, int y, int w, int h, int s, int numFrames) {
         super.x=x;
@@ -142,32 +143,7 @@ public class Rock extends GameObject {
         //thread.start();
 
     }
-//    @Override
-//    public void run() {
-//        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-//            points.set(1, new Point(x+56,y+25));
-//            points.set(2, new Point(x + 106, y + 16));
-//            points.set(3, new Point(x+140,y+24));
-//            points.set(4, new Point(x+160,y+52));
-//            points.set(5, new Point(x+159,y+83));
-//            points.set(6, new Point(x+158,y+126));
-//            points.set(7, new Point(x+173,y+160));
-//            points.set(8, new Point(x+181,y+195));
-//            points.set(9, new Point(x+176,y+235));
-//            points.set(10, new Point(x+155,y+263));
-//            points.set(11, new Point(x+119,y+266));
-//            points.set(12, new Point(x+82,y+253));
-//            points.set(13, new Point(x+41,y+259));
-//            points.set(14, new Point(x+16,y+226));
-//            points.set(15, new Point(x+13,y+185));
-//            points.set(16, new Point(x+18,y+148));
-//            points.set(17, new Point(x+14,y+111));
-//            points.set(18, new Point(x+19,y+74));
-//            points.set(19, new Point(x+32,y+52));
-//            points.set(20, new Point(x + 74, y + 16));
-//        setCurrentThread((Thread.currentThread()));
-//
-//    }
+
     @Override
     public void draw(Canvas canvas){
         try{
@@ -196,5 +172,25 @@ public class Rock extends GameObject {
     @Override
     public ArrayList<Point> getPoints(){
         return this.points;
+    }
+    @Override
+    public void explosion(Bitmap res, int numFrames){
+        Bitmap[] image = new Bitmap[numFrames];
+
+        spritesheet = res;
+
+        for(int i = 0; i<image.length;i++){
+            image[i] = Bitmap.createBitmap(spritesheet, i*width, 0, width, height);
+        }
+        animation.setFrames(image);
+        animation.setDelay(60);
+    }
+    @Override
+    public boolean isDestroyed(){
+        return destroyed;
+    }
+    @Override
+    public void setDestroyed(boolean destroyed){
+        this.destroyed=destroyed;
     }
 }

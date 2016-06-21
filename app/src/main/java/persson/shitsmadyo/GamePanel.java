@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -30,6 +31,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread thread;
     private Background bg;
     private MenuBG menuBg;
+    private boolean paused = false;
 
     public Player getPlayer() {
         return player;
@@ -66,6 +68,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private ArrayList<GameObject> spear;
     private long boatStartTime;
     private long hunterStartTime;
+    private long pauseStartTime;
     private Random rand = new Random();
     private int click = 0;
     private long puStartTime;
@@ -79,17 +82,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap pusmalllsd;
     private Bitmap mBitmap;
     private Spawner spawner;
-    private int rockVariation;
-    private int hunterVariation;
-    private int powerUpVariation;
-    private int boatVariation;
+    private double rockVariation;
+    private double hunterVariation;
+    private double powerUpVariation;
+    private double boatVariation;
     private boolean updateOne = false;
     private boolean updateTwo = false;
     private ArrayList<PUCircle> powerupImages;
     public static double spawnRate;
     private boolean menu;
     public static boolean vodka;
-
+    private boolean gameStarted=false;
+    ArrayList<MediaPlayer> sounds = new ArrayList<>();
+    ArrayList<MediaPlayer> soundsToStart = new ArrayList<>();
     public MediaPlayer getWarningMP() {
         return warningMP;
     }
@@ -113,6 +118,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     MediaPlayer pickupMP;
     MediaPlayer music;
     MediaPlayer lsdMP;
+
     //MediaPlayer lsdPUMP;
     Smoke smoke;
     private boolean moveLeft = false;
@@ -133,6 +139,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
+
+    public GamePanel(Context context, AttributeSet attributeSet) {
+
+        super(context, attributeSet);
+        //add the callback to the surfaceholder to intercept events
+        getHolder().addCallback(this);
+
+        thread = new MainThread(getHolder(), this);
+
+        //make gamePanel focusable so it can handle events
+        setFocusable(true);
     }
 
     public float getScaleFactorX() {
@@ -170,10 +188,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        menu();
+        System.out.println("looool");
+        if(!gameStarted) {
+            menu();
+        }
         //we can safely start the game loop
         thread.setRunning(true);
-        thread.start();
+        if (thread.getState() == Thread.State.NEW) {
+            thread.start();
+        }
 
     }
 
@@ -196,10 +219,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         boatStartTime = System.nanoTime();
         puStartTime = System.nanoTime();
         hunterStartTime = System.nanoTime();
-        rockVariation = 9 + (int)(Math.random() * ((11-9)+1));
-        hunterVariation = 7 + (int)(Math.random() * ((13-7)+1));
-        powerUpVariation = 6 + (int)(Math.random() * ((14-6)+1));
-        boatVariation =   8 + (int)(Math.random() * ((12-8)+1));
+        rockVariation = (double)(rand.nextInt((11 - 9) + 1)+9)/10; //0.9-1.1
+        hunterVariation = (double)(rand.nextInt((13 - 7) + 1)+7)/10; //0.7-1.3
+        powerUpVariation = (double)(rand.nextInt((14 - 8) + 1)+8)/10; //0.8-1.4
+        boatVariation = (double)(rand.nextInt((12 - 8) + 1)+8)/10; //0.8-1.2
 
         powerupImages = new ArrayList<>();
         spawnRate = 0.5;
@@ -229,6 +252,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         pusmallsweed = BitmapFactory.decodeResource(getResources(), R.drawable.pucirclesmallwedd);
         powerupImages.add(new PUCircle(BitmapFactory.decodeResource(getResources(), R.drawable.pucircle), WIDTH - 95, HEIGHT - 55, 50, 50));
         powerupImages.add(new PUCircle(BitmapFactory.decodeResource(getResources(), R.drawable.pucirclesmall), WIDTH - 40, HEIGHT - 40, 35, 35));
+        gameStarted = true;
     }
 
     public void menu() {
@@ -236,6 +260,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         clickMP = MediaPlayer.create(this.getContext(), R.raw.click);
         menuBg = new MenuBG(BitmapFactory.decodeResource(getResources(), R.drawable.menubg));
         player = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.croc), BitmapFactory.decodeResource(getResources(), R.drawable.crocdead), 150, 200, 12);
+        System.out.println("menuuuu");
         //TEST
 //        rock = null;
 //        warning = null;
@@ -293,7 +318,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                         if (recta.contains(x, y)) {
                             breakMP = MediaPlayer.create(this.getContext(), R.raw.breake);
                             breakMP.start();
-                            rock.remove(r);
+                            r.explosion(BitmapFactory.decodeResource(getResources(), R.drawable.rockonearraynewexplosion), 7);
+                            r.setDestroyed(true);
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for(GameObject r:rock) {
+                                        if(r.isDestroyed()) {
+                                            rock.remove(r);
+                                        }
+                                    }
+                                }
+                            }, 420);
                         }
                     }
                 }
@@ -403,6 +440,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
+        System.out.println("Updating...");
         if (player.getPlaying() && player.getLifes() > 0 && !menu) {
 
             bg.update();
@@ -410,36 +448,41 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             if (smoke.getWeedActive()) {
                 smoke.update();
             }
+            if(player.getAbstinens()>=100) {
+                death();
+                player.setAbstinens(75);
+            }
             //menuBg.update();
             //add rocks on timer
             long rockElapsed = (System.nanoTime() - rockStartTime) / 1000000;
-            if (rockElapsed > spawnRate * 7000) {
+            if (rockElapsed > spawnRate * 7000*rockVariation) {
                 spawner.spawnRock();
-                rockVariation = 9 + (int)(Math.random() * ((11-9)+1));
+                rockVariation = (double)(rand.nextInt((11 - 9) + 1)+9)/10; //0.9-1.1
                 rockStartTime = System.nanoTime();
             }
             //add boats on timer
             long boatElapsed = (System.nanoTime() - boatStartTime) / 1000000;
-            if (boatElapsed > spawnRate * 10000) {
+            if (boatElapsed > spawnRate * 10000*boatVariation) {
                 spawner.spawnBoat();
-                boatVariation =   8 + (int)(Math.random() * ((12-8)+1));
+                boatVariation = (double)(rand.nextInt((12 - 8) + 1)+8)/10; //0.8-1.2
                 // boatMP.start();
                 boatStartTime = System.nanoTime();
             }
 
             //add hunters on timer
             long hunterElapsed = (System.nanoTime() - hunterStartTime) / 1000000;
-            if (hunterElapsed > spawnRate * 10000) {
+            if (hunterElapsed > spawnRate * 10000*hunterVariation) {
                 spawner.spawnHunter();
-                hunterVariation = 7 + (int)(Math.random() * ((13-7)+1));
+                hunterVariation = (double)(rand.nextInt((13 - 7) + 1)+7)/10; //0.7-1.3
                 hunterStartTime = System.nanoTime();
                 //ljudgrejer för hunter
             }
 
             //add powerups on timer
             long puElapsed = (System.nanoTime() - puStartTime) / 1000000;
-            if (puElapsed > (spawnRate * 15000)) {
+            if (puElapsed > (spawnRate * 15000*powerUpVariation)) {
                 spawner.spawnPowerUp();
+                powerUpVariation = (double)(rand.nextInt((14 - 8) + 1)+8)/10; //0.8-1.4
                 //reset timer
                 puStartTime = System.nanoTime();
             }
@@ -704,6 +747,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         player.setIsDead(true);
         player.setLifes((player.getLifes() - 1));
         player.setScoreMultiplyer(1);
+        player.setAbstinens(player.getAbstinens()-20);
         if (player.getLifes() == 0) {
             player.setPlaying(false);
             warningMP.stop();
@@ -789,57 +833,60 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void draw(Canvas canvas) {
-        final float scaleFactorX = getWidth() / (WIDTH * 1.f);
-        final float scaleFactorY = getHeight() / (HEIGHT * 1.f);
-        //menuBg.draw(canvas);
-        if (canvas != null) {
-            final int savedState = canvas.save();
-            canvas.scale(scaleFactorX, scaleFactorY);
-            Paint paintOriginal = new Paint();
-            paintOriginal.setAntiAlias(true);
-            paintOriginal.setFilterBitmap(true);
-            LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x000000FF);
-            if (player.isLsd()) {
-                paintOriginal.setColorFilter(test);
+        if(!isInEditMode()) {
+            System.out.println("Drawing...");
+            final float scaleFactorX = getWidth() / (WIDTH * 1.f);
+            final float scaleFactorY = getHeight() / (HEIGHT * 1.f);
+            //menuBg.draw(canvas);
+            if (canvas != null) {
+                final int savedState = canvas.save();
+                canvas.scale(scaleFactorX, scaleFactorY);
+                Paint paintOriginal = new Paint();
+                paintOriginal.setAntiAlias(true);
+                paintOriginal.setFilterBitmap(true);
+                LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x00FF00FF);
+                if (player.isLsd()) {
+                    paintOriginal.setColorFilter(test);
+                }
+                if (menuBg != null) {
+                    menuBg.draw(canvas);
+                }
+                bg.draw(canvas);
+                player.draw(canvas);
+                if (smoke.getWeedActive()) {
+                    smoke.draw(canvas);
+                }
+                for (GameObject r : rock) {
+                    r.draw(canvas);
+                }
+                for (Boat b : boat) {
+                    b.draw(canvas, paintOriginal);
+                }
+                for (Warning w : warning) {
+                    w.draw(canvas);
+                }
+                for (PowerUp p : powerup) {
+                    p.draw(canvas);
+                }
+                for (Hunter h : hunter) {
+                    h.draw(canvas, paintOriginal);
+                }
+                for (PUCircle pu : powerupImages) {
+                    pu.draw(canvas);
+                }
+                for (GameObject s : spear) {
+                    s.draw(canvas);
+                }
+                drawText(canvas);
+                if (player.getLifes() == 0) {
+                    Paint paint = new Paint();
+                    paint.setColor(Color.BLACK);
+                    paint.setTextSize(50);
+                    paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+                    canvas.drawText("GAME OVER NIGGA", WIDTH / 2 - 200, HEIGHT / 2 - 50, paint);
+                }
+                canvas.restoreToCount(savedState);
             }
-            if (menuBg != null) {
-                menuBg.draw(canvas);
-            }
-            bg.draw(canvas);
-            player.draw(canvas);
-            if (smoke.getWeedActive()) {
-                smoke.draw(canvas);
-            }
-            for (GameObject r : rock) {
-                r.draw(canvas);
-            }
-            for (Boat b : boat) {
-                b.draw(canvas, paintOriginal);
-            }
-            for (Warning w : warning) {
-                w.draw(canvas);
-            }
-            for (PowerUp p : powerup) {
-                p.draw(canvas);
-            }
-            for (Hunter h : hunter) {
-                h.draw(canvas, paintOriginal);
-            }
-            for (PUCircle pu : powerupImages) {
-                pu.draw(canvas);
-            }
-            for (GameObject s : spear) {
-                s.draw(canvas);
-            }
-            drawText(canvas);
-            if (player.getLifes() == 0) {
-                Paint paint = new Paint();
-                paint.setColor(Color.BLACK);
-                paint.setTextSize(50);
-                paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                canvas.drawText("GAME OVER NIGGA", WIDTH / 2 - 200, HEIGHT / 2 - 50, paint);
-            }
-            canvas.restoreToCount(savedState);
         }
     }
 
@@ -855,6 +902,88 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         } else {
             canvas.drawText("SCORE: " + ((int) player.getScore()) + " x" + player.getScoreMultiplyer(), 10, 40, paint);
         }
-        canvas.drawText("LIFES: " + player.getLifes(), WIDTH - 130, 40, paint);
+        canvas.drawText("LIFES: " + player.getLifes(), 10, 80, paint);
+        canvas.drawText("ABS: " + player.getAbstinens(), WIDTH-130, 40, paint);
+    }
+
+    public void pauseButton(){
+        if(paused) {
+            resume();
+        } else {
+            pause();
+        }
+    }
+
+    public void pause(){
+        System.out.println("Pausing");
+        boolean retry = true;
+        int counter = 0;
+        while (retry && counter < 1000) {
+            counter++;
+            try {
+                thread.setRunning(false);
+                thread.join();
+                retry = false;
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        sounds.add(warningMP);
+        sounds.add(boatMP);
+        sounds.add(weedMP);
+        sounds.add(weedPUMP);
+        sounds.add(vodkaMP);
+        sounds.add(vodkaPUMP);
+        sounds.add(death);
+        sounds.add(breakMP);
+        sounds.add(pickupMP);
+        sounds.add(smackMP);
+        sounds.add(boatSmackMP);
+        sounds.add(clickMP);
+        sounds.add(music);
+        sounds.add(lsdMP);
+        if(gameStarted) {
+            for(MediaPlayer mp: sounds) {
+                System.out.println("ohh");
+                if(mp!=null) {
+                    System.out.println("KOLLA NU HAHA: "+mp);
+                    if (mp.isPlaying()) {
+                        System.out.println("KOLLA HAHA: "+mp);
+                        mp.pause();
+                        soundsToStart.add(mp);
+                    }
+                }
+            }
+        }
+        pauseStartTime=System.nanoTime();
+        paused=true;
+    }
+    public void resume(){
+        System.out.println("Resuming");
+        if(!thread.isRunning() && gameStarted) {
+            thread = new MainThread(getHolder(), this);
+            thread.setRunning(true);
+            thread.start();
+        }
+        if(gameStarted) {
+            for(MediaPlayer mp: soundsToStart) {
+                mp.start();
+            }
+        }
+        soundsToStart.clear();
+        long pauseElapsed = System.nanoTime() - pauseStartTime;
+
+        rockStartTime+=pauseElapsed;
+        boatStartTime+=pauseElapsed;
+        hunterStartTime+=pauseElapsed;
+        puStartTime+=pauseElapsed;
+        for(Hunter h:hunter){
+            h.setSpearStartTime(h.getSpearStartTime()-pauseElapsed);
+        }
+        player.setScoreStartTime(player.getScoreStartTime()-pauseElapsed);
+        player.setAbsStartTime(player.getAbsStartTime() - pauseElapsed);
+        player.setStartTime(player.getStartTime()-pauseElapsed);
+        paused=false;
     }
 }

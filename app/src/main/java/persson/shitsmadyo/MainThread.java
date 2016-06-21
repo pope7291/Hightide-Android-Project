@@ -8,6 +8,11 @@ public class MainThread extends Thread
     private double averageFPS;
     private SurfaceHolder surfaceHolder;
     private GamePanel gamePanel;
+
+    public boolean isRunning() {
+        return running;
+    }
+
     private boolean running;
     public static Canvas canvas;
 

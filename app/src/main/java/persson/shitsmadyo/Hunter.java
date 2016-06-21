@@ -16,6 +16,15 @@ public class Hunter extends GameObject{
     private Animation animation = new Animation();
     private Bitmap spritesheet;
     private ArrayList<Point> points;
+
+    public long getSpearStartTime() {
+        return spearStartTime;
+    }
+
+    public void setSpearStartTime(long spearStartTime) {
+        this.spearStartTime = spearStartTime;
+    }
+
     private long spearStartTime;
 
     public Hunter(Bitmap res, int x, int y, int w, int h, int numFrames) {
@@ -75,7 +84,7 @@ public class Hunter extends GameObject{
     }
     public boolean createSpear(){
         long spearElapsed = (System.nanoTime() - spearStartTime) / 1000000;
-        if(spearElapsed>(GamePanel.spawnRate*2000)){
+        if(spearElapsed>(GamePanel.spawnRate*3000)){
             spearStartTime=System.nanoTime();
             return true;
         } else {

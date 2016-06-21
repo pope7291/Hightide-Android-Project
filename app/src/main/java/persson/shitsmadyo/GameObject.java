@@ -93,4 +93,13 @@ public abstract class GameObject {
     public boolean isDead(){
         return true;
     }
+    public void explosion(Bitmap res, int numFrames){
+
+    }
+    public boolean isDestroyed(){
+        return true;
+    }
+    public void setDestroyed(boolean destroyed){
+
+    }
 }

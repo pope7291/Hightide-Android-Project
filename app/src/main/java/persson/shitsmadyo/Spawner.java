@@ -25,14 +25,14 @@ public class Spawner {
         ArrayList<GameObject> rock = gamePanel.getRockList();
         boolean rockVar = rand.nextBoolean();
         int pos;
-        if (rockVar) {
-            pos=collisionSpawn(194, 286, "Rock");
-            rock.add(new Rock(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rock), pos, -250, 194, 286, (int) gamePanel.getPlayer().getTime(), 7));
-        } else {
-            System.out.println("LMAO LOLLL");
-            pos=collisionSpawn(259, 360, "Rock");
-            rock.add(new RockOne(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rockonearraynew), pos, -250, 259, 360, (int) gamePanel.getPlayer().getTime(), 3));
-        }
+//        if (rockVar) {
+//            System.out.println("LMAO LOLLLLLLLLLLLLLLLLL");
+//            pos=collisionSpawn(194, 286, "Rock");
+//            rock.add(new Rock(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rock), pos, -250, 194, 286, (int) gamePanel.getPlayer().getTime(), 7));
+//        } else {
+            pos=collisionSpawn(108, 150, "Rock");
+            rock.add(new Rock(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rockonearraynew), pos, -250, 144, 201, (int) gamePanel.getPlayer().getTime(), 3));
+      //  }
         //reset timer
         // gamePanel.setRock(rock);
     }
@@ -70,7 +70,7 @@ public class Spawner {
         System.out.println("spawning hunter");
         ArrayList<Hunter> hunter = gamePanel.getHunter();
         int pos = collisionSpawn(125, 125, "Hunter");
-        hunter.add(new Hunter(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.hunter), pos, -300, 125, 125, 1));
+        hunter.add(new Hunter(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.hunter), pos, -550, 125, 125, 1));
     }
 
     public void spawnPowerUp(){

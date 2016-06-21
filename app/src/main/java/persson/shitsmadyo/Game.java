@@ -1,17 +1,26 @@
 package persson.shitsmadyo;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Surface;
+import android.view.SurfaceView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 
 public class Game extends Activity {
+    GamePanel gamePanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
 
         //turn title off
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -19,7 +28,8 @@ public class Game extends Activity {
         //set to full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(new GamePanel(this));
+        setContentView(R.layout.activity_game);
+        gamePanel=(GamePanel)findViewById(R.id.gamepanel);
     }
 
 
@@ -43,5 +53,32 @@ public class Game extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        System.out.println("onPause");
+        gamePanel.pause();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        System.out.println("onStop");
+
+        //gamePanel.pause();
+    }
+
+    @Override
+    public void onRestart(){
+        super.onResume();
+        System.out.println("onResume");
+
+    //    setContentView(gamePanel);
+        gamePanel.resume();
+    }
+    public void pauseButton(View view){
+        gamePanel.pauseButton();
     }
 }
