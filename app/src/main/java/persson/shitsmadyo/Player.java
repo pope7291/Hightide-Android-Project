@@ -67,7 +67,7 @@ public class Player extends GameObject {
 
     public Player (Bitmap res, Bitmap res2, int w, int h, int numFrames) {
         x = (GamePanel.WIDTH / 2)-100;
-        y = GamePanel.HEIGHT-165;
+        y = GamePanel.HEIGHT;
         dx = 0;
         score = 0;
         height = h;
@@ -90,13 +90,13 @@ public class Player extends GameObject {
         }
 
         animation.setFrames(image);
-        animation.setDelay(60);
+        animation.setDelay(20);
         animationDead.setFrames(imageDead);
         animationDead.setDelay(60);
         startTime = System.nanoTime();
         powerups = new ArrayList<>();
         lifes = 3;
-        abstinens = 99;
+        abstinens = 50;
        // powerupImages.add(new PUCircle(GamePanel.getPuempty()));
 
     }
@@ -113,6 +113,25 @@ public class Player extends GameObject {
         this.spritesheet = res;
     }
     public void update(){
+        if(abstinens<21) {
+            animation.setDelay(140);
+            animationDead.setDelay(140);
+        } else if(abstinens<41) {
+            animation.setDelay(110);
+            animationDead.setDelay(110);
+        } else if(abstinens<61) {
+            animation.setDelay(85);
+            animationDead.setDelay(85);
+        } else if(abstinens<81) {
+            animation.setDelay(50);
+            animationDead.setDelay(50);
+        } else if(abstinens<=100) {
+            animation.setDelay(20);
+            animationDead.setDelay(20);
+        }
+        if(y>=GamePanel.HEIGHT-165) {
+            y=y-2;
+        }
         long elapsed = (System.nanoTime()-startTime)/1000000;
         if(elapsed>500) {
             if (isLsd()) {
@@ -230,6 +249,9 @@ public class Player extends GameObject {
     public boolean isPuActive() {
 
         return puActive;
+    }
+    public void setAnimDelay(int delay){
+        animation.setDelay(delay);
     }
     public void setTooFarLeft(boolean b){
         this.tooFarLeft = b;

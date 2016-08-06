@@ -1,5 +1,6 @@
 package persson.shitsmadyo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.os.Handler;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,48 +33,30 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public static int MOVESPEED = 15;
     private MainThread thread;
     private Background bg;
-    private MenuBG menuBg;
-    private boolean paused = false;
-
-    public Player getPlayer() {
-        return player;
-    }
-
+    private Game act;
+    private Spawner spawner;
+    private Smoke smoke;
     private Player player;
-
-    public void setRock(ArrayList<GameObject> rock) {
-        this.rock = rock;
-    }
-
-    //private Rect leftBorder = new Rect(0, 0, (int) (WIDTH * scaleFactorX / 3), (int) (HEIGHT * scaleFactorY));
-    private ArrayList<GameObject> rock;
-    private long rockStartTime;
-
-    public ArrayList<Boat> getBoat() {
-        return boat;
-    }
-
-    private ArrayList<Boat> boat;
-    private ArrayList<Warning> warning;
-
-    public ArrayList<PowerUp> getPowerup() {
-        return powerup;
-    }
-
-    private ArrayList<PowerUp> powerup;
-
-    public ArrayList<Hunter> getHunter() {
-        return hunter;
-    }
-
-    private ArrayList<Hunter> hunter;
-    private ArrayList<GameObject> spear;
-    private long boatStartTime;
-    private long hunterStartTime;
-    private long pauseStartTime;
+    private String timerCurrent;
     private Random rand = new Random();
     private int click = 0;
-    private long puStartTime;
+    private boolean paused = false, go = false, moveLeft = false, moveRight = false, gameStarted = false, updateOne = false, updateTwo = false;
+    public static boolean vodka;
+    private MediaPlayer boatMP, weedPUMP, vodkaPUMP, weedMP, vodkaMP, death, clickMP, smackMP, boatSmackMP, breakMP, pickupMP, music, lsdMP, warningMP;
+    //TODO MediaPlayer lsdPUMP;
+    private long rockStartTime, boatStartTime, hunterStartTime, pauseStartTime, puStartTime;
+    private Paint paintText, paintLsd, paintTimer;
+    private double rockVariation, hunterVariation, powerUpVariation, boatVariation;
+    public static double spawnRate;
+    private ArrayList<GameObject> rock;
+    private ArrayList<Boat> boat;
+    private ArrayList<PowerUp> powerup;
+    private ArrayList<Warning> warning;
+    private ArrayList<Hunter> hunter;
+    private ArrayList<GameObject> spear;
+    private ArrayList<PUCircle> powerupImages;
+    private ArrayList<MediaPlayer> sounds = new ArrayList<>();
+    private ArrayList<MediaPlayer> soundsToStart = new ArrayList<>();
     private Bitmap puempty;
     private Bitmap puweed;
     private Bitmap puvodka;
@@ -81,59 +66,45 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap pusmallvodka;
     private Bitmap pusmalllsd;
     private Bitmap mBitmap;
-    private Spawner spawner;
-    private double rockVariation;
-    private double hunterVariation;
-    private double powerUpVariation;
-    private double boatVariation;
-    private boolean updateOne = false;
-    private boolean updateTwo = false;
-    private ArrayList<PUCircle> powerupImages;
-    public static double spawnRate;
-    private boolean menu;
-    public static boolean vodka;
-    private boolean gameStarted=false;
-    ArrayList<MediaPlayer> sounds = new ArrayList<>();
-    ArrayList<MediaPlayer> soundsToStart = new ArrayList<>();
+
+    public Player getPlayer() {
+        return player;
+    }
+    public ArrayList<Boat> getBoat() {
+        return boat;
+    }
+    public ArrayList<PowerUp> getPowerup() {
+        return powerup;
+    }
+    public ArrayList<Hunter> getHunter() {
+        return hunter;
+    }
     public MediaPlayer getWarningMP() {
         return warningMP;
     }
-
-    MediaPlayer warningMP;
-
     public MediaPlayer getBoatMP() {
         return boatMP;
     }
-
-    MediaPlayer boatMP;
-    MediaPlayer weedPUMP;
-    MediaPlayer vodkaPUMP;
-    MediaPlayer weedMP;
-    MediaPlayer vodkaMP;
-    MediaPlayer death;
-    MediaPlayer clickMP;
-    MediaPlayer smackMP;
-    MediaPlayer boatSmackMP;
-    MediaPlayer breakMP;
-    MediaPlayer pickupMP;
-    MediaPlayer music;
-    MediaPlayer lsdMP;
-
-    //MediaPlayer lsdPUMP;
-    Smoke smoke;
-    private boolean moveLeft = false;
-    private boolean moveRight = false;
+    public float getScaleFactorX() {
+        return scaleFactorX;
+    }
+    public float getScaleFactorY() {
+        return scaleFactorY;
+    }
+    public Smoke getSmoke() {
+        return smoke;
+    }
+    public void setMovespeed(int i) {
+        MOVESPEED = i;
+    }
+    public void setVodka(boolean vodka) {
+        this.vodka = vodka;
+    }
 
     public GamePanel(Context context) {
         super(context);
-
-
-        //add the callback to the surfaceholder to intercept events
         getHolder().addCallback(this);
-
         thread = new MainThread(getHolder(), this);
-
-        //make gamePanel focusable so it can handle events
         setFocusable(true);
     }
 
@@ -142,31 +113,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public GamePanel(Context context, AttributeSet attributeSet) {
-
         super(context, attributeSet);
-        //add the callback to the surfaceholder to intercept events
         getHolder().addCallback(this);
-
         thread = new MainThread(getHolder(), this);
-
-        //make gamePanel focusable so it can handle events
         setFocusable(true);
-    }
-
-    public float getScaleFactorX() {
-        return scaleFactorX;
-    }
-
-    public float getScaleFactorY() {
-        return scaleFactorY;
-    }
-
-    public void setMovespeed(int i) {
-        MOVESPEED = i;
-    }
-
-    public void setVodka(boolean vodka) {
-        this.vodka = vodka;
     }
 
     @Override
@@ -188,11 +138,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        System.out.println("looool");
-        if(!gameStarted) {
-            menu();
-        }
-        //we can safely start the game loop
+        gameStart();
         thread.setRunning(true);
         if (thread.getState() == Thread.State.NEW) {
             thread.start();
@@ -200,15 +146,74 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
-    public Smoke getSmoke() {
-        return smoke;
-    }
-
     public void gameStart() {
-        menu = false;
-        menuBg = null;
-        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.water));
+        final Handler sec = new Handler();
+        sec.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                clickMP = MediaPlayer.create(getContext(), R.raw.click);
+                paintTimer = new Paint();
+                paintTimer.setAntiAlias(true);
+                paintTimer.setFilterBitmap(true);
+                paintTimer.setColor(Color.WHITE);
+                paintTimer.setShadowLayer(2, 0, 0, Color.BLACK);
+                paintTimer.setTextSize(100);
+                paintTimer.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/DJGROSS.ttf"));
+                bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.water));
+                go=true;
+                timerCurrent="3";
+            }
+        }, 500);
+        final Handler oneSec = new Handler();
+        oneSec.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                timerCurrent="2";
+                clickMP.start();
+            }
+        }, 1500);
+        final Handler twoSec = new Handler();
+        twoSec.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                timerCurrent="1";
+                clickMP.start();
+            }
+        }, 2500);
+        final Handler threeSec = new Handler();
+        threeSec.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                timerCurrent="GO!";
+                music.setLooping(true);
+                music.start();
+                music.setVolume(0.7f, 0.7f);
+                gameStarted = true;
+                player.setPlaying(true);
+                clickMP.start();
+            }
+        }, 3500);
+        final Handler fourSec = new Handler();
+        fourSec.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                go=false;
+            }
+        }, 4500);
+        breakMP = MediaPlayer.create(this.getContext(), R.raw.breake);
+        smackMP = MediaPlayer.create(this.getContext(), R.raw.smack);
+        boatSmackMP = MediaPlayer.create(this.getContext(), R.raw.boatsmack);
+        pickupMP = MediaPlayer.create(this.getContext(), R.raw.pickup);
+        weedPUMP = MediaPlayer.create(this.getContext(), R.raw.weedpickup);
+        weedMP = MediaPlayer.create(this.getContext(), R.raw.weed);
+        lsdMP = MediaPlayer.create(this.getContext(), R.raw.lsd);
+        warningMP = MediaPlayer.create(this.getContext(), R.raw.boatwarning);
+        death = MediaPlayer.create(this.getContext(), R.raw.death);
+        vodkaMP = MediaPlayer.create(this.getContext(), R.raw.vodka);
+        vodkaPUMP = MediaPlayer.create(this.getContext(), R.raw.vodkapickup);
+        boatMP = MediaPlayer.create(this.getContext(), R.raw.boatsound);
         player = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.croc), BitmapFactory.decodeResource(getResources(), R.drawable.crocdead), 150, 200, 12);
+
         rock = new ArrayList<GameObject>();
         boat = new ArrayList<Boat>();
         warning = new ArrayList<Warning>();
@@ -232,68 +237,34 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         smoke = new Smoke(BitmapFactory.decodeResource(getResources(), R.drawable.fog), -782, 0);
         spawner = new Spawner(this);
 
-        //warningMP = MediaPlayer.create(this.getContext(), R.raw.boatwarning);
-        //boatMP = MediaPlayer.create(this.getContext(), R.raw.boatsound);
-        //weedPUMP = MediaPlayer.create(this.getContext(), R.raw.weedpickup);
-        //vodkaPUMP = MediaPlayer.create(this.getContext(), R.raw.vodkapickup);
-        //smackMP = MediaPlayer.create(this.getContext(), R.raw.smack);
-        //weedMP = MediaPlayer.create(this.getContext(), R.raw.weed);
-        //vodkaMP = MediaPlayer.create(this.getContext(), R.raw.vodka);
-        //death = MediaPlayer.create(this.getContext(), R.raw.death);
-        //breakMP = MediaPlayer.create(this.getContext(), R.raw.breake);
-        //pickupMP = MediaPlayer.create(this.getContext(), R.raw.pickup);
-        //puempty = BitmapFactory.decodeResource(getResources(), R.drawable.pucircle);
         music = MediaPlayer.create(this.getContext(), R.raw.music);
-        music.setLooping(true);
-        music.start();
-        music.setVolume(0.7f, 0.7f);
+
         puweed = BitmapFactory.decodeResource(getResources(), R.drawable.pucircleweed);
         pusmall = BitmapFactory.decodeResource(getResources(), R.drawable.pucirclesmall);
         pusmallsweed = BitmapFactory.decodeResource(getResources(), R.drawable.pucirclesmallwedd);
         powerupImages.add(new PUCircle(BitmapFactory.decodeResource(getResources(), R.drawable.pucircle), WIDTH - 95, HEIGHT - 55, 50, 50));
         powerupImages.add(new PUCircle(BitmapFactory.decodeResource(getResources(), R.drawable.pucirclesmall), WIDTH - 40, HEIGHT - 40, 35, 35));
-        gameStarted = true;
-    }
 
-    public void menu() {
-        menu = true;
-        clickMP = MediaPlayer.create(this.getContext(), R.raw.click);
-        menuBg = new MenuBG(BitmapFactory.decodeResource(getResources(), R.drawable.menubg));
-        player = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.croc), BitmapFactory.decodeResource(getResources(), R.drawable.crocdead), 150, 200, 12);
-        System.out.println("menuuuu");
-        //TEST
-//        rock = null;
-//        warning = null;
-//        powerup = null;
-//        rockStartTime = 0;
-//        boatStartTime = 0;
-//        puStartTime = 0;
-//        powerupImages = null;
-//        spawnRate = 0;
-//        updateOne = false;
-//        updateTwo = false;
-//        puweed = null;
-//        pusmall = null;
+        paintText = new Paint();
+        paintText.setAntiAlias(true);
+        paintText.setFilterBitmap(true);
+        paintText.setColor(Color.WHITE);
+        paintText.setShadowLayer(2, 0, 0, Color.BLACK);
+        paintText.setTextSize(30);
+        paintText.setTypeface(Typeface.createFromAsset(this.getContext().getAssets(), "fonts/justice.ttf"));
+
+        paintLsd = new Paint();
+        paintLsd.setAntiAlias(true);
+        paintLsd.setFilterBitmap(true);
+        paintLsd.setColor(Color.MAGENTA);
+        paintLsd.setShadowLayer(2, 0, 0, Color.BLACK);
+        paintLsd.setTextSize(40);
+        //  Typeface font = Typeface.createFromAsset(getAssets(), "justiceout.ttf");
+        paintLsd.setTypeface(Typeface.createFromAsset(this.getContext().getAssets(), "fonts/justice.ttf"));
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (menu) {
-            final float scaleFactorX = getWidth() / (WIDTH * 1.f);
-            final float scaleFactorY = getHeight() / (HEIGHT * 1.f);
-            //Rect left = new Rect(44, 164, 390, 117);
-            Rect start = new Rect((int) (scaleFactorX * 44), (int) (scaleFactorY * 164), (int) (scaleFactorX * (390 + 44)), (int) (scaleFactorY * (117 + 164)));
-            int x = (int) event.getX();
-            int y = (int) event.getY();
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                //Rect start = new Rect(scaleFactorX * WIDTH-44, scaleFactorX * WIDTH-164, scaleFactorY * HEIGHT-390, scaleFactorY * HEIGHT-117);
-                if (start.contains(x, y)) {
-                    clickMP.start();
-                    gameStart();
-                    return true;
-                }
-            }
-        } else {
             if (player.getLifes() > 0) {
                 int action = event.getActionMasked();
                 final float scaleFactorX = getWidth() / (WIDTH * 1.f);
@@ -316,7 +287,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     for (GameObject r : rock) {
                         Rect recta = new Rect((int) (r.getX() * scaleFactorX), (int) (r.getY() * scaleFactorY), (int) ((r.getX() + r.getWidth()) * scaleFactorX), (int) ((r.getY() + r.getHeight()) * scaleFactorY));
                         if (recta.contains(x, y)) {
-                            breakMP = MediaPlayer.create(this.getContext(), R.raw.breake);
                             breakMP.start();
                             r.explosion(BitmapFactory.decodeResource(getResources(), R.drawable.rockonearraynewexplosion), 7);
                             r.setDestroyed(true);
@@ -330,55 +300,42 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                                         }
                                     }
                                 }
-                            }, 420);
+                            }, 420); //420 time required to complete animation. Probably need a better solution later
                         }
                     }
                 }
                 if (action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_DOWN) {
                     if (right.contains(x, y) && player.getTooFarRight() == false) {
-                        System.out.println("HOGERLOL");
-                        if (!player.getPlaying()) {
-                            player.setPlaying(true);
-                        } else {
                             moveRight = true;
                             moveLeft = false;
-                            player.setMovement(6);
+                            player.setMovement(movementAbs());
                             player.setLeft(false);
                             player.setRight(true);
                             final Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    player.setMovement(10);
+                                    player.setMovement(movementHoldAbs());
                                 }
                             }, 300);
                             player.setTooFarLeft(false);
-                        }
                     }
                     if (left.contains(x, y) && player.getTooFarLeft() == false) {
-                        System.out.println("VANSTERLOL");
-                        if (!player.getPlaying()) {
-                            player.setPlaying(true);
-                        } else {
                             moveRight = false;
                             moveLeft = true;
-                            player.setMovement(6);
+                            player.setMovement(movementAbs());
                             player.setRight(false);
                             player.setLeft(true);
                             final Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    player.setMovement(10);
+                                    player.setMovement(movementHoldAbs());
                                 }
                             }, 300);
                             player.setTooFarRight(false);
-                        }
                     }
                     if (middle.contains(x, y)) {
-                        if (!player.getPlaying()) {
-                            player.setPlaying(true);
-                        } else {
                             click++;
                             Handler handler = new Handler();
                             Runnable r = new Runnable() {
@@ -407,11 +364,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                                         }, 8000);
                                     }
                                     player.activate();
-                                    //playSound(this.getContext(), R.raw.weed);
                                     updatePUImages();
                                 }
                             }
-                        }
                     }
                     return true;
                 }
@@ -421,27 +376,49 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     return true;
                 }
             }
-        }
         return false;
     }
 
-    public void moveRight() {
-        player.setMovement(6);
-        player.setLeft(false);
-        player.setRight(true);
-        player.setTooFarLeft(false);
+   public int movementAbs() {
+       int abstinens = player.getAbstinens();
+       if (abstinens < 21) {
+           return 4;
+       } else if (abstinens < 41) {
+           return 5;
+       } else if (abstinens < 61) {
+           return 6;
+       } else if (abstinens < 81) {
+           return 7;
+       } else if (abstinens <= 100) {
+           return 8;
+       }
+       return 6;
+   }
+    public int movementHoldAbs() {
+        int abstinens = player.getAbstinens();
+        if (abstinens < 21) {
+            return 8;
+        } else if (abstinens < 41) {
+            return 10;
+        } else if (abstinens < 61) {
+            return 12;
+        } else if (abstinens < 81) {
+            return 14;
+        } else if (abstinens <= 100) {
+            return 16;
+        }
+        return 6;
     }
-
-    public void moveLeft() {
-        player.setMovement(6);
-        player.setRight(false);
-        player.setLeft(true);
-        player.setTooFarRight(false);
-    }
-
     public void update() {
-        System.out.println("Updating...");
-        if (player.getPlaying() && player.getLifes() > 0 && !menu) {
+        if (player.getPlaying() && player.getLifes() > 0 && gameStarted) {
+            String score = (int)player.getScore()+" ";
+            String scoreMulti = "x"+(int)player.getScoreMultiplyer()+" ";
+            String abs = " "+player.getAbstinens();
+            String lifes = " "+player.getLifes();
+            act.setScoreText(score);
+            act.setScoreMultiText(scoreMulti);
+            act.setAbs(abs);
+            act.setLifes(lifes);
 
             bg.update();
             player.update();
@@ -452,10 +429,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 death();
                 player.setAbstinens(75);
             }
-            //menuBg.update();
             //add rocks on timer
             long rockElapsed = (System.nanoTime() - rockStartTime) / 1000000;
-            if (rockElapsed > spawnRate * 7000*rockVariation) {
+            if (rockElapsed > spawnRate * 5000*rockVariation) {
                 spawner.spawnRock();
                 rockVariation = (double)(rand.nextInt((11 - 9) + 1)+9)/10; //0.9-1.1
                 rockStartTime = System.nanoTime();
@@ -463,10 +439,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             //add boats on timer
             long boatElapsed = (System.nanoTime() - boatStartTime) / 1000000;
             if (boatElapsed > spawnRate * 10000*boatVariation) {
+                warningMP.start();
                 spawner.spawnBoat();
                 boatVariation = (double)(rand.nextInt((12 - 8) + 1)+8)/10; //0.8-1.2
                 // boatMP.start();
                 boatStartTime = System.nanoTime();
+                final Handler boatSec = new Handler();
+                boatSec.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        boatMP.start();
+                    }
+                }, 1500);
             }
 
             //add hunters on timer
@@ -475,12 +459,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 spawner.spawnHunter();
                 hunterVariation = (double)(rand.nextInt((13 - 7) + 1)+7)/10; //0.7-1.3
                 hunterStartTime = System.nanoTime();
-                //ljudgrejer för hunter
+                //ljudgrejer f ör hunter
             }
 
             //add powerups on timer
             long puElapsed = (System.nanoTime() - puStartTime) / 1000000;
-            if (puElapsed > (spawnRate * 15000*powerUpVariation)) {
+            if (puElapsed > (spawnRate * 12000*powerUpVariation)) {
                 spawner.spawnPowerUp();
                 powerUpVariation = (double)(rand.nextInt((14 - 8) + 1)+8)/10; //0.8-1.4
                 //reset timer
@@ -503,7 +487,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             for (int i = 0; i < rock.size(); i++) {
                 rock.get(i).update();
                 if (collision(player, rock.get(i)) && !player.isDead()) {
-                    smackMP = MediaPlayer.create(this.getContext(), R.raw.smack);
                     rock.get(i).getBitmap().recycle();
                     rock.remove(i);
                     smackMP.start();
@@ -530,7 +513,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             while (j < boat.size()) {
                 boat.get(j).update();
                 if (collision(player, boat.get(j)) && !player.isDead()) {
-                    boatSmackMP = MediaPlayer.create(this.getContext(), R.raw.boatsmack);
                     boat.get(j).getBitmap().recycle();
                     boat.remove(j);
                     boatSmackMP.start();
@@ -538,7 +520,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     break;
                 }
                 if (boat.get(j).getY() > HEIGHT * 2) {
-                   // boatMP.stop();
+                    boatMP.stop();
                     boat.get(j).getBitmap().recycle();
                     boat.remove(j);
                     break;
@@ -557,7 +539,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             for (int i = 0; i < powerup.size(); i++) {
                 powerup.get(i).update();
                 if (collisionPU(player, powerup.get(i))) {
-                    pickupMP = MediaPlayer.create(this.getContext(), R.raw.pickup);
                     pickupMP.start();
 //                    if(powerup.get(i) instanceof Weed) {
 //                        //MediaPlayer weedPUMP = MediaPlayer.create(this.getContext(), R.raw.weedpickup);
@@ -579,14 +560,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
 
+            //TODO check bug with left/right edge
             //Checks for left/right edge of the screen, puts player back at edge
-            if (player.getX() <= 5) {
+            if (player.getX() <= 15) {
                 player.setTooFarLeft(true);
-                player.setX(5);
+                player.setX(15);
             }
-            if (player.getX() >= WIDTH - 150) {
+            if (player.getX() >= WIDTH - 160) {
                 player.setTooFarRight(true);
-                player.setX(WIDTH - 150);
+                player.setX(WIDTH - 160);
                 //Is -59 ok? Or is it not scaleable
             }
         }
@@ -596,27 +578,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (Rect.intersects(a.getRectangle(), b.getRectangle())) {
             //Collision points. See RockCollision image.
             if (b instanceof Rock) {
-                b.getPoints().set(0, new Point((b.getX() + 56), (b.getY() + 25)));
-                b.getPoints().set(1, new Point((b.getX() + 106), (b.getY() + 16)));
-                b.getPoints().set(2, new Point((b.getX() + 140), (b.getY() + 24)));
-                b.getPoints().set(3, new Point((b.getX() + 160), (b.getY() + 52)));
-                b.getPoints().set(4, new Point((b.getX() + 159), (b.getY() + 83)));
-                b.getPoints().set(5, new Point((b.getX() + 158), (b.getY() + 126)));
-                b.getPoints().set(6, new Point((b.getX() + 173), (b.getY() + 160)));
-                b.getPoints().set(7, new Point((b.getX() + 181), (b.getY() + 195)));
-                b.getPoints().set(8, new Point((b.getX() + 176), (b.getY() + 235)));
-                b.getPoints().set(9, new Point((b.getX() + 155), (b.getY() + 263)));
-                b.getPoints().set(10, new Point((b.getX() + 119), (b.getY() + 266)));
-                b.getPoints().set(11, new Point((b.getX() + 82), (b.getY() + 253)));
-                b.getPoints().set(12, new Point((b.getX() + 41), (b.getY() + 259)));
-                b.getPoints().set(13, new Point((b.getX() + 16), (b.getY() + 226)));
-                b.getPoints().set(14, new Point((b.getX() + 13), (b.getY() + 185)));
-                b.getPoints().set(15, new Point((b.getX() + 18), (b.getY() + 148)));
-                b.getPoints().set(16, new Point((b.getX() + 14), (b.getY() + 111)));
-                b.getPoints().set(17, new Point((b.getX() + 19), (b.getY() + 74)));
-                b.getPoints().set(18, new Point((b.getX() + 32), (b.getY() + 52)));
-                b.getPoints().set(19, new Point((b.getX() + 74), (b.getY() + 16)));
-                //exactly 20 points fucks it up for some reason
+                ((Rock) b).collisionPoints();
             }
             if (b instanceof RockOne) {
                 b.getPoints().set(0, new Point((b.getX() + 36), (b.getY() + 44)));
@@ -640,29 +602,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 b.getPoints().set(18, new Point((b.getX() + 22), (b.getY() + 82)));
             }
             if (b instanceof Boat) {
-                b.getPoints().set(0, new Point((b.getX() + 88), (b.getY() + 407)));
-                b.getPoints().set(1, new Point((b.getX() + 72), (b.getY() + 399)));
-                b.getPoints().set(2, new Point((b.getX() + 55), (b.getY() + 389)));
-                b.getPoints().set(3, new Point((b.getX() + 38), (b.getY() + 370)));
-                b.getPoints().set(4, new Point((b.getX() + 27), (b.getY() + 348)));
-                b.getPoints().set(5, new Point((b.getX() + 20), (b.getY() + 326)));
-                b.getPoints().set(6, new Point((b.getX() + 18), (b.getY() + 275)));
-                b.getPoints().set(7, new Point((b.getX() + 17), (b.getY() + 202)));
-                b.getPoints().set(8, new Point((b.getX() + 17), (b.getY() + 237)));
-                b.getPoints().set(9, new Point((b.getX() + 16), (b.getY() + 128)));
-                b.getPoints().set(10, new Point((b.getX() + 16), (b.getY() + 161)));
-                b.getPoints().set(11, new Point((b.getX() + 105), (b.getY() + 398)));
-                b.getPoints().set(12, new Point((b.getX() + 116), (b.getY() + 388)));
-                b.getPoints().set(13, new Point((b.getX() + 130), (b.getY() + 370)));
-                b.getPoints().set(14, new Point((b.getX() + 138), (b.getY() + 349)));
-                b.getPoints().set(15, new Point((b.getX() + 145), (b.getY() + 326)));
-                b.getPoints().set(16, new Point((b.getX() + 146), (b.getY() + 276)));
-                b.getPoints().set(17, new Point((b.getX() + 147), (b.getY() + 241)));
-                b.getPoints().set(18, new Point((b.getX() + 147), (b.getY() + 204)));
-                b.getPoints().set(19, new Point((b.getX() + 148), (b.getY() + 166)));
-                b.getPoints().set(20, new Point((b.getX() + 148), (b.getY() + 128)));
-                b.getPoints().set(21, new Point((b.getX() + 84), (b.getY() + 122)));
-
+                ((Boat) b).collisionPoints();
             }
             if (collisionTest(a, b)) {
                 return true;
@@ -682,8 +622,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (pu instanceof Weed) {
             music.pause();
             //final MediaPlayer weedMP = MediaPlayer.create(this.getContext(), R.raw.weed);
-            weedPUMP = MediaPlayer.create(this.getContext(), R.raw.weedpickup);
-            weedMP = MediaPlayer.create(this.getContext(), R.raw.weed);
             weedPUMP.start();
             weedMP.start();
             new Timer().schedule(new TimerTask() {
@@ -698,8 +636,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             }, 8000);
         } else if (pu instanceof Vodka) {
             music.pause();
-            vodkaPUMP = MediaPlayer.create(this.getContext(), R.raw.vodkapickup);
-            vodkaMP = MediaPlayer.create(this.getContext(), R.raw.vodka);
             //final MediaPlayer vodkaMP = MediaPlayer.create(this.getContext(), R.raw.vodka);
             vodkaPUMP.start();
             vodkaMP.start();
@@ -716,7 +652,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         } else if (pu instanceof Lsd) {
             music.pause();
             //    lsdPUMP = MediaPlayer.create(this.getContext(), R.raw.lsdpickup);
-            lsdMP = MediaPlayer.create(this.getContext(), R.raw.lsd);
             //  lsdPUMP.start();
             lsdMP.start();
             new Timer().schedule(new TimerTask() {
@@ -743,11 +678,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void death() {
-        death = MediaPlayer.create(this.getContext(), R.raw.death);
         player.setIsDead(true);
         player.setLifes((player.getLifes() - 1));
         player.setScoreMultiplyer(1);
-        player.setAbstinens(player.getAbstinens()-20);
+        if(player.getAbstinens()>=20) {
+            player.setAbstinens(player.getAbstinens() - 20);
+        } else {
+            player.setAbstinens(0);
+        }
         if (player.getLifes() == 0) {
             player.setPlaying(false);
             warningMP.stop();
@@ -761,6 +699,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             music.stop();
             death.start();
             player.setSpritesheet(BitmapFactory.decodeResource(getResources(), R.drawable.crocdead));
+            String finalScore = (int)player.getScore()+"";
+            act.gameOver(finalScore);
+
         }
         new Timer().schedule(new TimerTask() {
             @Override
@@ -770,14 +711,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             }
         }, 3000);
         //player.setSpritesheet(BitmapFactory.decodeResource(getResources(), R.drawable.croc));
-        warningMP = MediaPlayer.create(this.getContext(), R.raw.boatwarning);
-        boatMP = MediaPlayer.create(this.getContext(), R.raw.boatsound);
-        weedPUMP = MediaPlayer.create(this.getContext(), R.raw.weedpickup);
-        vodkaPUMP = MediaPlayer.create(this.getContext(), R.raw.vodkapickup);
-        weedMP = MediaPlayer.create(this.getContext(), R.raw.weed);
-        vodkaMP = MediaPlayer.create(this.getContext(), R.raw.vodka);
-        lsdMP = MediaPlayer.create(this.getContext(), R.raw.lsd);
-        boatSmackMP = MediaPlayer.create(this.getContext(), R.raw.boatsmack);
+//        warningMP = MediaPlayer.create(this.getContext(), R.raw.boatwarning);
+//        boatMP = MediaPlayer.create(this.getContext(), R.raw.boatsound);
+//        weedPUMP = MediaPlayer.create(this.getContext(), R.raw.weedpickup);
+//        vodkaPUMP = MediaPlayer.create(this.getContext(), R.raw.vodkapickup);
+//        weedMP = MediaPlayer.create(this.getContext(), R.raw.weed);
+//        vodkaMP = MediaPlayer.create(this.getContext(), R.raw.vodka);
+//        lsdMP = MediaPlayer.create(this.getContext(), R.raw.lsd);
+//        boatSmackMP = MediaPlayer.create(this.getContext(), R.raw.boatsmack);
         //TODO lsdPUMP när vi har ljudfil
         // lsdPUMP = MediaPlayer.create(this.getContext(), R.raw.lsdpickup);
     }
@@ -837,7 +778,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             System.out.println("Drawing...");
             final float scaleFactorX = getWidth() / (WIDTH * 1.f);
             final float scaleFactorY = getHeight() / (HEIGHT * 1.f);
-            //menuBg.draw(canvas);
             if (canvas != null) {
                 final int savedState = canvas.save();
                 canvas.scale(scaleFactorX, scaleFactorY);
@@ -847,9 +787,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x00FF00FF);
                 if (player.isLsd()) {
                     paintOriginal.setColorFilter(test);
-                }
-                if (menuBg != null) {
-                    menuBg.draw(canvas);
                 }
                 bg.draw(canvas);
                 player.draw(canvas);
@@ -877,41 +814,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 for (GameObject s : spear) {
                     s.draw(canvas);
                 }
-                drawText(canvas);
-                if (player.getLifes() == 0) {
-                    Paint paint = new Paint();
-                    paint.setColor(Color.BLACK);
-                    paint.setTextSize(50);
-                    paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                    canvas.drawText("GAME OVER NIGGA", WIDTH / 2 - 200, HEIGHT / 2 - 50, paint);
+                if(go) {
+                    canvas.drawText(timerCurrent, WIDTH / 2 - 100, HEIGHT / 2, paintTimer);
                 }
                 canvas.restoreToCount(savedState);
             }
         }
     }
 
-    public void drawText(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setFilterBitmap(true);
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(30);
-        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        if (player.isLsd()) {
-            canvas.drawText("SCORE: " + ((int) player.getScore()) + " x" + player.getScoreMultiplyer() + " x2", 10, 40, paint);
-        } else {
-            canvas.drawText("SCORE: " + ((int) player.getScore()) + " x" + player.getScoreMultiplyer(), 10, 40, paint);
-        }
-        canvas.drawText("LIFES: " + player.getLifes(), 10, 80, paint);
-        canvas.drawText("ABS: " + player.getAbstinens(), WIDTH-130, 40, paint);
-    }
 
-    public void pauseButton(){
+    public boolean isPaused(){
         if(paused) {
-            resume();
-        } else {
-            pause();
+            return true;
         }
+        return false;
+    }
+    public void setActivity(Game act) {
+        this.act = act;
     }
 
     public void pause(){

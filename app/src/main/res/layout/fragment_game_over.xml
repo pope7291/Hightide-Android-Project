@@ -1,0 +1,105 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="350dp"
+    android:layout_height="350dp" tools:context="persson.shitsmadyo.gamePause"
+    android:id="@+id/gamepause"
+    android:layout_gravity="center"
+    android:background="@drawable/pauseshape">
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Game Over"
+        android:gravity="center"
+        android:textColor="#44000000"
+        android:textSize="40sp"
+        android:id="@+id/overText"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:width="235dp"
+        android:layout_gravity="center"
+        android:background="@drawable/pausebg"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="score"
+        android:textSize="50dp"
+        android:textColor="#FFFFFFFF"
+        android:id="@+id/scoreOver"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="60dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Final Score:"
+        android:gravity="center_horizontal"
+        android:textColor="#44FFFFFF"
+        android:textSize="25sp"
+        android:id="@+id/overScore"
+        android:height="150dp"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:width="275dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_gravity="center"
+        android:background="@drawable/pausebg"
+        android:layout_below="@+id/overText"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/overrestart"
+        android:onClick="playAgain"
+        android:text="Play Again"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textAlignment="inherit"
+
+        android:layout_width="185dp"
+        android:layout_height="50dp"
+        android:background="@drawable/buttonresume"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp" />
+
+    <Button
+        android:id="@+id/overexit"
+        android:onClick="exit"
+        android:text="Quit"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textAlignment="inherit"
+
+        android:layout_width="125dp"
+        android:layout_height="45dp"
+        android:background="@drawable/buttonexit"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:layout_marginBottom="5dp"
+
+        android:layout_above="@+id/overrestart"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

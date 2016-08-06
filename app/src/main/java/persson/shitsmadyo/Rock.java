@@ -53,52 +53,19 @@ public class Rock extends GameObject {
 
         //collision points
         points = new ArrayList<>();
-//        Point p1 = new Point(x+56,y+25);
-//        Point p2 = new Point(x+106,y+16);
-//        Point p3 = new Point(x+140,y+24);
-//        Point p4 = new Point(x+160,y+52);
-//        Point p5 = new Point(x+159,y+83);
-//        Point p6 = new Point(x+158,y+126);
-//        Point p7 = new Point(x+173,y+160);
-//        Point p8 = new Point(x+181,y+195);
-//        Point p9 = new Point(x+176,y+235);
-//        Point p10 = new Point(x+155,y+263);
-//        Point p11 = new Point(x+119,y+266);
-//        Point p12 = new Point(x+82,y+253);
-//        Point p13 = new Point(x+41,y+259);
-//        Point p14 = new Point(x+16,y+226);
-//        Point p15 = new Point(x+13,y+185);
-//        Point p16 = new Point(x+18,y+148);
-//        Point p17 = new Point(x+14,y+111);
-//        Point p18 = new Point(x+19,y+74);
-//        Point p19 = new Point(x+32,y+52);
-//        Point p20 = new Point(x+74,y+16);
 
-
-
-
-        points.add(new Point(x+56,y+25));
-        points.add(new Point(x+106,y+16));
-        points.add(new Point(x+140,y+24));
-        points.add(new Point(x+160,y+52));
-        points.add(new Point(x+159,y+83));
-        points.add(new Point(x+158,y+126));
-        points.add(new Point(x+173,y+160));
-        points.add(new Point(x+181,y+195));
-        points.add(new Point(x+176,y+235));
-        points.add(new Point(x+155,y+263));
-        points.add(new Point(x+119,y+266));
-        points.add(new Point(x+82,y+253));
-        points.add(new Point(x+41,y+259));
-        points.add(new Point(x+16,y+226));
-        points.add(new Point(x+13,y+185));
-        points.add(new Point(x+18,y+148));
-        points.add(new Point(x+14,y+111));
-        points.add(new Point(x+19,y+74));
-        points.add(new Point(x+32,y+52));
-        points.add(new Point(x+74,y+16));
-
-
+        points.add(new Point(x+75,y+186));
+        points.add(new Point(x+124,y+169));
+        points.add(new Point(x+130,y+128));
+        points.add(new Point(x+122,y+77));
+        points.add(new Point(x+124,y+47));
+        points.add(new Point(x+108,y+21));
+        points.add(new Point(x+56,y+13));
+        points.add(new Point(x+29,y+24));
+        points.add(new Point(x+16,y+68));
+        points.add(new Point(x+13,y+131));
+        points.add(new Point(x+16,y+164));
+        points.add(new Point(x+37,y+183));
 
     }
     @Override
@@ -192,5 +159,19 @@ public class Rock extends GameObject {
     @Override
     public void setDestroyed(boolean destroyed){
         this.destroyed=destroyed;
+    }
+    public void collisionPoints(){
+        points.set(0, new Point(x + 75, y + 186));
+        points.set(1, new Point(x + 124, y + 169));
+        points.set(2, new Point(x + 130, y + 128));
+        points.set(3, new Point(x + 122, y + 77));
+        points.set(4, new Point(x + 124, y + 47));
+        points.set(5, new Point(x + 108, y + 21));
+        points.set(6, new Point(x + 56, y + 13));
+        points.set(7, new Point(x + 29, y + 24));
+        points.set(8, new Point(x + 16, y + 68));
+        points.set(9, new Point(x + 13, y + 131));
+        points.set(10, new Point(x + 16, y + 164));
+        points.set(11, new Point(x+37,y+183));
     }
 }

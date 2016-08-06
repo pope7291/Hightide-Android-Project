@@ -1,0 +1,84 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="300dp"
+    android:layout_height="300dp" tools:context="persson.shitsmadyo.gamePause"
+    android:id="@+id/gamepause"
+    android:layout_gravity="center"
+    android:background="@drawable/pauseshape">
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Paused"
+        android:gravity="center"
+        android:textColor="#44FFFFFF"
+        android:textSize="50sp"
+        android:id="@+id/pauseText"
+        android:width="225dp"
+        android:layout_gravity="center"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:background="@drawable/pausebg"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/pauseresume"
+        android:onClick="pauseButton"
+        android:text="Resume"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textAlignment="inherit"
+
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:background="@drawable/buttonresume"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp" />
+    <Button
+        android:id="@+id/pauseoptions"
+        android:text="Options"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textAlignment="inherit"
+
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:background="@drawable/buttonresume"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:layout_marginBottom="5dp"
+        android:layout_above="@+id/pauseresume"
+        android:layout_alignLeft="@+id/pauseresume"
+        android:layout_alignStart="@+id/pauseresume" />
+    <Button
+        android:id="@+id/pauseexit"
+        android:onClick="exit"
+        android:text="Quit"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textAlignment="inherit"
+
+        android:layout_width="125dp"
+        android:layout_height="45dp"
+        android:background="@drawable/buttonexit"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

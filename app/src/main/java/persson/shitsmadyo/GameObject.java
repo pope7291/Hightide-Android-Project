@@ -80,12 +80,6 @@ public abstract class GameObject {
     public Bitmap getBitmap(){
         return null;
     }
-    public Boolean isSpearThrow(){
-        return true;
-    }
-    public void setSpearThrow(boolean spearThrow){
-
-    }
 
     public ArrayList<Point> getPoints(){
         return points;

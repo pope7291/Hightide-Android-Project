@@ -20,7 +20,7 @@ public class Background {
         dy = GamePanel.MOVESPEED;
     }
 
-    //reset when image is off the screen
+    //reset when background is off screen
     public void update(){
         dy = GamePanel.MOVESPEED;
         y = y+dy;
@@ -36,10 +36,6 @@ public class Background {
         Paint pm = new Paint();
         pm.setAntiAlias(true);
         pm.setFilterBitmap(true);
-        LightingColorFilter test = new LightingColorFilter(0xFFFFFFFF, 0x000000FF);
-      //  pm.setColorFilter(test);
-        Shader shader = new LinearGradient(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT, Color.RED, Color.GREEN, Shader.TileMode.MIRROR);
-      // pm.setShader(shader);
         canvas.drawBitmap(image, x, y, pm);
         if(y>0) {
             canvas.drawBitmap(image, x, y - GamePanel.HEIGHT, pm);

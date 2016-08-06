@@ -2,7 +2,6 @@ package persson.shitsmadyo;
 
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.media.MediaPlayer;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -25,14 +24,13 @@ public class Spawner {
         ArrayList<GameObject> rock = gamePanel.getRockList();
         boolean rockVar = rand.nextBoolean();
         int pos;
-//        if (rockVar) {
-//            System.out.println("LMAO LOLLLLLLLLLLLLLLLLL");
-//            pos=collisionSpawn(194, 286, "Rock");
-//            rock.add(new Rock(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rock), pos, -250, 194, 286, (int) gamePanel.getPlayer().getTime(), 7));
-//        } else {
-            pos=collisionSpawn(108, 150, "Rock");
-            rock.add(new Rock(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rockonearraynew), pos, -250, 144, 201, (int) gamePanel.getPlayer().getTime(), 3));
-      //  }
+        if (rockVar) {
+            pos=collisionSpawn(200, 120, "Rock");
+            rock.add(new Rock(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rocknewrockone), pos, -250, 200, 120, (int) gamePanel.getPlayer().getTime(), 3));
+        } else {
+            pos=collisionSpawn(144, 201, "Rock");
+            rock.add(new Rock(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.rockonearraynewversiontwo), pos, -250, 144, 201, (int) gamePanel.getPlayer().getTime(), 3));
+        }
         //reset timer
         // gamePanel.setRock(rock);
     }
@@ -44,8 +42,6 @@ public class Spawner {
         //  System.out.println("Creating warning");
         //MediaPlayer warningMP = MediaPlayer.create(this.getContext(), R.raw.boatwarning);
         //final MediaPlayer boatMP = MediaPlayer.create(this.getContext(), R.raw.boatsound);
-        MediaPlayer warningMP = MediaPlayer.create(gamePanel.getContext(), R.raw.boatwarning);
-        warningMP.start();
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -70,7 +66,7 @@ public class Spawner {
         System.out.println("spawning hunter");
         ArrayList<Hunter> hunter = gamePanel.getHunter();
         int pos = collisionSpawn(125, 125, "Hunter");
-        hunter.add(new Hunter(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.hunter), pos, -550, 125, 125, 1));
+        hunter.add(new Hunter(BitmapFactory.decodeResource(gamePanel.getResources(), R.drawable.hunter), pos, -1000, 125, 125, 1));
     }
 
     public void spawnPowerUp(){
@@ -113,8 +109,13 @@ public class Spawner {
             collision = true;
             for(int i = 0; i<objects.size(); i++) {
                 System.out.println("Kollar object...");
+                if(pos<37 || pos+width>GamePanel.WIDTH-32) {
+                    collision = false;
+                    pos = (int) (rand.nextDouble() * (gamePanel.WIDTH - width));
+                    rectTemp = new Rect(pos, 0, pos + width, height);
+                }
                 if(objects.get(i) instanceof GameObject) {
-                    if (collision(rectTemp, (GameObject)objects.get(i))) {
+                    if (collision(rectTemp, (GameObject) objects.get(i))) {
                         System.out.println("Kollision!lel");
                         collision = false;
                         pos = (int) (rand.nextDouble() * (gamePanel.WIDTH - width));

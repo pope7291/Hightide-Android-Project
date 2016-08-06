@@ -17,8 +17,8 @@ public class Animation {
         currentFrame = 0;
         startTime = System.nanoTime();
     }
-    public void setDelay(long d) {
-        delay = d;
+    public void setDelay(long delay) {
+        this.delay = delay;
     }
     public void setFrame(int i) {
         currentFrame = i;

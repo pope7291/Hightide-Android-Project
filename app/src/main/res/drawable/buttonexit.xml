@@ -5,9 +5,9 @@
             <padding
                 android:bottom="2dp"
                 android:left="1dp"></padding>
-        <solid android:color="#66000000">
+            <solid android:color="#66000000">
 
-        </solid>
+            </solid>
             <corners
                 android:radius="100dp"
                 />
@@ -16,16 +16,15 @@
     </item>
     <item>
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
-
     <corners
         android:radius="100dp"
         />
     <gradient
         android:angle="45"
         android:centerX="35%"
-        android:centerColor="#FA66FF"
-        android:startColor="#54A4FF"
-        android:endColor="#D1FF54"
+        android:startColor="#FF990000"
+        android:endColor="#FFEE0000"
+        android:centerColor="#FFCC0000"
         android:type="linear"
         />
     <padding
@@ -35,7 +34,7 @@
         android:bottom="0dp"
         />
     <size
-        android:width="104dp"
+        android:width="90dp"
         android:height="42dp"
         />
     <stroke
@@ -43,5 +42,5 @@
         android:color="#FFFFFF"
         />
 </shape>
-    </item>
-</layer-list>
+        </item>
+    </layer-list>

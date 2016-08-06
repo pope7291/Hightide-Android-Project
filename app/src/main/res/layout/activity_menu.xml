@@ -4,7 +4,9 @@
     android:layout_height="match_parent"
     tools:context=".Menu"
     android:weightSum="1"
-    android:background="@drawable/background">
+    android:background="@drawable/background"
+    android:id="@+id/activity_menu">
+
 
     <Button
         android:id="@+id/angry_btn"
@@ -12,20 +14,89 @@
 
         android:text="Start"
         android:textColor="#FFFFFF"
-        android:textSize="30sp"
+        android:textSize="40sp"
+        android:textAlignment="inherit"
 
-        android:layout_width="104dp"
-        android:layout_height="42dp"
+
+        android:layout_width="210dp"
+        android:layout_height="70dp"
         android:background="@drawable/buttonshape"
         android:shadowColor="#000000"
-        android:shadowDx="0"
-        android:shadowDy="0"
+        android:shadowDx="-1"
+        android:shadowDy="1"
         android:shadowRadius="2"
-        android:layout_marginRight="60dp"
-        android:layout_marginEnd="60dp"
-        android:layout_marginTop="104dp"
-        android:layout_alignParentTop="true"
+        android:layout_marginTop="127dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@+id/junkee2"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+    <Button
+        android:id="@+id/angry_btn2"
 
+        android:text="Leaderboard"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textAlignment="inherit"
+
+        android:layout_width="210dp"
+        android:layout_height="70dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:layout_below="@+id/angry_btn"
+        android:layout_alignLeft="@+id/angry_btn"
+        android:layout_alignStart="@+id/angry_btn"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:id="@+id/junkee"
+        android:text="Crocodile Junkee:"
+        android:textColor="#ffffff"
+        android:textSize="30sp"
+        android:textAlignment="inherit"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:id="@+id/junkee2"
+        android:text="HIGHTIDE"
+        android:textColor="#ff00ff"
+        android:textSize="45sp"
+        android:textAlignment="inherit"
+        android:shadowColor="#0066ff"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/junkee"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:id="@+id/angry_btn3"
+
+        android:text="Options"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textAlignment="inherit"
+
+        android:layout_width="210dp"
+        android:layout_height="70dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#000000"
+        android:shadowDx="-1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:layout_below="@+id/angry_btn2"
+        android:layout_alignLeft="@+id/angry_btn2"
+        android:layout_alignStart="@+id/angry_btn2"
+        android:layout_marginTop="5dp"
+        />
 </RelativeLayout>
