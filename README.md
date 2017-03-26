@@ -7,5 +7,5 @@ apart from it being a fun hobby. While the project did go through iterations of 
 I ultimately abandoned the project when I reached the point where I realized I'd be better off simply rewriting the entire application.
 
 In conclusion,
-for any potential employer viewing this documentation, please see that this level of coding was a very early point in my career, 
-but admire my dedication using the very limited knowledge I had available to create a, arguably subjective, playable Android-game.
+for any potential employer viewing this documentation, please see that this level of coding was at a very early point in my career, 
+but admire my determination using the very limited knowledge I had available to create a, arguably subjective, playable Android-game.
